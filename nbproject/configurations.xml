@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>tempsSrc/common.h</itemPath>
+      <itemPath>tempsSrc/database.h</itemPath>
+      <itemPath>tempsSrc/email.h</itemPath>
+      <itemPath>tempsSrc/file_operations.h</itemPath>
+      <itemPath>tempsSrc/folder.h</itemPath>
+      <itemPath>tempsSrc/imports.h</itemPath>
+      <itemPath>tempsSrc/menu.h</itemPath>
+      <itemPath>tempsSrc/utils.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+      <logicalFolder name="emailDB" displayName="emailDB" projectFiles="true">
+        <itemPath>emailDB/CAFdmR09@mail.gmail.com.txt</itemPath>
+        <itemPath>emailDB/EMconfig.txt</itemPath>
+        <itemPath>emailDB/message1.txt</itemPath>
+        <itemPath>emailDB/message2.txt</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>tempsSrc/database.c</itemPath>
+      <itemPath>tempsSrc/email.c</itemPath>
+      <itemPath>tempsSrc/file_operations.c</itemPath>
+      <itemPath>tempsSrc/folder.c</itemPath>
+      <itemPath>tempsSrc/main.c</itemPath>
+      <itemPath>tempsSrc/menu.c</itemPath>
+      <itemPath>tempsSrc/utils.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>tempsSrc</Elem>
+    <Elem>emailDB</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+      </compileType>
+      <item path="emailDB/CAFdmR09@mail.gmail.com.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="emailDB/EMconfig.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="emailDB/message1.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="emailDB/message2.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/common.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/database.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/database.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/email.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/email.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/file_operations.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/file_operations.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/folder.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/folder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/imports.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/menu.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/menu.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/utils.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="emailDB/CAFdmR09@mail.gmail.com.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="emailDB/EMconfig.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="emailDB/message1.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="emailDB/message2.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/common.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/database.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/database.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/email.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/email.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/file_operations.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/file_operations.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/folder.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/folder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/imports.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/menu.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/menu.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tempsSrc/utils.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tempsSrc/utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

@@ -1,0 +1,18 @@
+Message-ID: 2
+
+Folders:
+Inbox
+OutBox
+test
+
+Inbox Messages:
+message1
+CAFdmR09@mail.gmail.com
+
+OutBox Messages:
+message2
+
+test Messages:
+message1
+
+End
