@@ -9,6 +9,7 @@
 #include "imports.h"
 #include "database.h"
 #include "utils.h"
+#include "folder.h"
 
 /**
  * Initializes an email database.
@@ -106,7 +107,7 @@ void get_new_message_id(Database* db, char buf[]) {
 
         sprintf(str_num, "%d", last_id_gen); //cast int value to string
         strcpy(temp, str_num); // adding id 
-        strcat(temp, FORMAT_EMAIL_ID); // adding _EDA_email
+        strcat(temp, EMAIL_INIT_ID); // adding _EDA_email
         strcpy(buf, temp); //storing result to buff
     }
 }

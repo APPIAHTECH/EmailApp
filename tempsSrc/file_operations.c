@@ -133,10 +133,7 @@ int store_email(Email* email) {
     int result = 0;
 
     //Creating path format
-    strcpy(path, EM_STORE_PATH);
-    strcat(path, email->id);
-    strcat(path, FILE_FORMAT);
-
+    get_email_store_path(path, email->id);
     //Opennig file on write mode
     email_file = fopen(path, FILE_WRITE_MODE);
 
@@ -146,7 +143,7 @@ int store_email(Email* email) {
     } else {
         result = write_email_to_file(email_file, email); //writing content
         if (result == FAIL) {
-            fclose(email_file); //end uup email_file proces
+            fclose(email_file); //end up email_file proces
             return FAIL;
         }
     }
@@ -271,7 +268,8 @@ int get_message(FILE *config_file, Database *db) {
                 strcpy(email.id, email_name);
                 email.referenced = UNDEFINED;
                 email.empty = FALSE;
-                temp_email = add_email_to_database(db, &email);
+
+                temp_email = add_email_to_database(db, &email); //adding email to the db and returning a refrence to it
                 if (temp_email == NULL)
                     return FAIL;
                 else {
@@ -279,10 +277,33 @@ int get_message(FILE *config_file, Database *db) {
                     db->folders[i].empty = FALSE;
                     j++;
                 }
-
             }
         }
     }
 
     return SUCCESS;
+}
+
+int get_messages_info(Email *email) {
+
+    //Variables declarations
+    FILE *file = NULL;
+    char path[MAX_BUF];
+
+    //setting the file path
+    get_email_store_path(path, email->id);
+    file = fopen(path, FILE_READ_MODE);
+
+    if (file == NULL) { //If any error log error msg
+        log_error(stdout, ERROR_MSG_FILE_NOT_FOUDN);
+    } else {
+
+        if (load_email_from_file(file, email) != FAIL) //reading email file and saveing it on email structure
+            return SUCCESS;
+
+        fclose(file); //End up the file proces
+    }
+
+    return FAIL;
+
 }

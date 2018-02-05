@@ -69,10 +69,10 @@ void print_email(Email *email) {
 
     printf("Date %s \n", email->date);
     printf("ID %s \n", email->id);
-    printf("De %s \n", email->from);
-    printf("Para %s \n", email->to);
-    printf("Asunto %s \n", email->subject);
-    printf("Menssage %s \n", email->body);
+    printf("From %s \n", email->from);
+    printf("To %s \n", email->to);
+    printf("Subject %s \n", email->subject);
+    printf("Message %s \n", email->body);
     printf("Empty %d \n", email->empty);
     printf("Referenced %d \n", email->referenced);
 }
@@ -165,4 +165,33 @@ int index_of(char * str, char * searched) {
     }
 
     return position;
+}
+
+/**
+ *  Given a str it returns the substring 
+ * @param dest
+ * @param src
+ * @param from
+ * @param to
+ */
+void str_sub_string(char *dest, char *src, int from, int to) {
+
+    int i = 0, j = 0;
+    for (i = from; i < to; i++) {
+        if (src[i] != '\n' || src[i] != '\r') {
+            dest[j] = src[i];
+            j++;
+        }
+    }
+}
+
+void get_email_store_path(char *dest, char *email) {
+
+    char path[MAX_PATH];
+
+    strcpy(path, EM_STORE_PATH);
+    strcat(path, email);
+    strcat(path, FILE_FORMAT);
+
+    strcpy(dest, path);
 }

@@ -36,5 +36,6 @@ int get_folder_emails(Folder* folder, Email** emails);
 int add_email_to_folder(Folder* folder, Email* email);
 int delete_folder_email(Folder* folder, Email* email);
 void read_folder_interactive(Folder* folder);
+void copy_folder(Folder* dest_folder, Folder* src_folder);
 #endif /* FOLDER_H */
 

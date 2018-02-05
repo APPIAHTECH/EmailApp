@@ -19,12 +19,12 @@
 void init_email(Email* email) {
 
     //Defautl email structure
-    strcpy(email->id, "_EDA_email");
+    strcpy(email->id, EMAIL_INIT_ID);
     strcpy(email->date, get_curent_date());
-    strcpy(email->from, "MonsterKrod@gmail.com");
-    strcpy(email->to, "MonsterKrod@gmail.com");
-    strcpy(email->subject, "Defuult email structure");
-    strcpy(email->body, "Hola esto es una prueba!!!");
+    strcpy(email->from, EMAIL_INIT_FROM);
+    strcpy(email->to, EMAIL_INIT_TO);
+    strcpy(email->subject, EMAIL_INIT_SUBJECT);
+    strcpy(email->body, EMAIL_INIT_BODY);
 
     email->empty = TRUE;
     email->referenced = UNDEFINED;
@@ -109,16 +109,16 @@ void read_email_interactive(Email* email) {
 
     //Getting email info
     set_email_date(email);
-    printf("De : \n");
+    printf(EMAIL_INTERACTIVE_FROM);
     scanf("%s", email->from);
 
-    printf("Para : \n");
+    printf(EMAIL_INTERACTIVE_TO);
     scanf("%s", email->to);
 
-    printf("Asunto : \n");
+    printf(EMAIL_INTERACTIVE_SUBJECT);
     scanf("%s", email->subject);
 
-    printf("Menssage : \n");
+    printf(EMAIL_INTERACTIVE_MESSAGE);
     scanf("%s", email->body);
     email->referenced = referenced_to_out_box;
     email->empty = FALSE;
@@ -133,15 +133,41 @@ void read_email_interactive(Email* email) {
 int load_email_from_file(FILE* fd, Email *email) {
 
     //Variables declarations
-    char buff[MAX_BUF];
-    
-    puts("\n");
+    char buff[MAX_BUF], temp[MAX_BUF], header[MAX_BUF], body[MAX_BUF];
+    int pos, matched;
+
     fgets(buff, MAX_BUF, fd);
     while (!feof(fd)) {
-        puts(buff);
+        str_remove_trash(buff);
+        matched = sscanf(buff, FORMAT_EMAIL_FILE_STRUC, header);
+        if (matched > 0) {
+            pos = index_of(buff, FORMAT_FIELD_HEADERS);
+
+            if (pos > 0) {
+                pos += 2; // +2 ,for getting the line without the first 2 white spaces 
+                str_sub_string(temp, buff, pos, MAX_BUF);
+
+                //PREGUNTAR SI FROM Y TO TENEMOS QUE SACAR LOS MAILS QUE ESTAN DENTRO DE <MAIL>???
+                if (strcmp(header, EMAIL_FILE_STRUC_DATE) == 0)
+                    strcpy(email->date, temp);
+
+                else if (strcmp(header, EMAIL_FILE_STRUC_FROM) == 0)
+                    strcpy(email->from, temp);
+
+                else if (strcmp(header, EMAIL_FILE_STRUC_TO) == 0)
+                    strcpy(email->to, temp);
+
+                else if (strcmp(header, EMAIL_FILE_STRUC_SUBJECT) == 0)
+                    strcpy(email->subject, temp);
+            } else {
+                if (strcmp(buff, NEW_LINE) != 0)
+                    strcat(body, buff);
+            }
+        }
         fgets(buff, MAX_BUF, fd);
+        strcpy(email->body, body);
     }
-    
+
     return SUCCESS;
 }
 

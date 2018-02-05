@@ -30,5 +30,7 @@ void str_remove_trash(char *buff);
 int index_of(char * str, char * searched);
 void print_folder(Folder *folder);
 void print_database(Database *db);
+void str_sub_string(char *dest , char *src , int from , int to);
+void get_email_store_path(char *dest , char *email);
 #endif /* UTILS_H */
 

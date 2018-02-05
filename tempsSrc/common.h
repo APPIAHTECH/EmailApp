@@ -26,11 +26,34 @@
 #define FORMAT_MESSAGE_ID "%s %d"
 #define FORMAT_SPECIAL_BEAM_CANON "%s\n"
 #define FORMAT_FIELD_HEADERS ":"
-#define FORMAT_MESSAGE_FIND " Messages:"
-#define FORMAT_EMAIL_ID "_EDA_email"
 #define NEW_LINE "\r\n"
-#define MESSAGE_COMPARE "Messages:"
+#define FORMAT_EMAIL_FILE_STRUC "%s"
 
+
+/**Email Basic Structure*/
+#define EMAIL_INIT_ID "_EDA_email"
+#define EMAIL_INIT_FROM "stephen.appiah@estudiant.upf.edu"
+#define EMAIL_INIT_TO "manuell@estudiant.upf.edu"
+#define EMAIL_INIT_SUBJECT "hugo k tal"
+#define EMAIL_INIT_BODY "Esto es una estructura!!"
+
+/**EMAIL FILE FOR READING STRUCTURE*/
+#define EMAIL_FILE_STRUC_DATE "Date:"
+#define EMAIL_FILE_STRUC_FROM "From:"
+#define EMAIL_FILE_STRUC_TO "To:"
+#define EMAIL_FILE_STRUC_MESSAGEID "Message-ID:"
+#define EMAIL_FILE_STRUC_SUBJECT "Subject:"
+
+/**EMAIL INTERACTIVE**/
+#define EMAIL_INTERACTIVE_FROM "From:\n"
+#define EMAIL_INTERACTIVE_TO "To:\n"
+#define EMAIL_INTERACTIVE_SUBJECT "Subject:\n"
+#define EMAIL_INTERACTIVE_MESSAGE "Message:\n"
+
+/**Folder Basic Structure*/
+#define FOLDER_INIT_NAME "_EDA_folder"
+
+/**Folders Protectes*/
 #define PROTECT_INBOX "Inbox"
 #define PROTECT_OUTBOX "OutBox"
 
@@ -55,8 +78,8 @@
 #define MESSAGE_EMAIL_ADDED_FOLDER "You have succefuly added the email to the folder"
 
 /**ERRORS*/
-#define ERROR_MSG_FILE_NOT_FOUDN "Unlucky :(  "
-#define ERROR_MSG_FILE_CANT_CREAT "Unlucky :(  "
+#define ERROR_MSG_FILE_NOT_FOUDN "File not found Unlucky :(  "
+#define ERROR_MSG_FILE_CANT_CREAT "Cant creat file Unlucky :(  "
 #define ERROR_SPECIAL_EMConfig "Problem found: Please revise your EMConfig file format\n"
 #define ERROR_MAIL_INVALID "Invalid email , please check it and try again :D "
 #define ERROR_FOLDER_CANT_ADD "Ups can't add folder"

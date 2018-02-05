@@ -7,6 +7,7 @@
 
 #include "imports.h"
 #include "folder.h"
+#include "email.h"
 #include "utils.h"
 
 /**
@@ -18,7 +19,7 @@
 void init_folder(Folder* folder) {
 
     //Defautl folder structure
-    strcpy(folder->folder_name, "_EDA_folder");
+    strcpy(folder->folder_name, FOLDER_INIT_NAME);
     folder->empty = TRUE;
     folder->protected = FALSE;
     folder->size = UNDEFINED;

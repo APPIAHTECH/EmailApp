@@ -24,5 +24,6 @@ int get_message_id(FILE *config_file);
 
 int get_folders(FILE *config_file , Database *db);
 
+int get_messages_info(Email *email);
 #endif /* FILE_OPERATIONS_H */
 

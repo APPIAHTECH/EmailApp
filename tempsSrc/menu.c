@@ -64,13 +64,16 @@ void list_emails_option(Database* db) {
 
     //TODO : EMAIL BODY IF LENGHT IS LES THAN 200 CARACTERS
     //Printing all existing emails
+    //NO FUNCIONA BIEN!!!!
     puts("All Emails :");
     puts("------------------------------");
     for (i = 0; i < MAX_EMAILS; i++) {
         if (is_email_empty(&db->emails[i]) != TRUE) { // if positon reading is empty we dont print else that means there is a email we can print
             printf("Email : %d \n", i + 1);
-            print_email(&db->emails[i]);
-            puts("------------------------------");
+            if (get_messages_info(&db->emails[i]) != FAIL) {
+                print_email(&db->emails[i]);
+                puts("------------------------------");
+            }
         }
     }
 }
@@ -82,9 +85,7 @@ void list_emails_option(Database* db) {
 void show_email_option(Database* db) {
 
     //Variables declarations
-    int i = 0;
-    char mail_to_show[MAX_BUF], path[MAX_PATH];
-    FILE *email_file = NULL;
+    char mail_to_show[MAX_BUF];
     Email *email;
 
     log_info(stdout, "You have selected: Show email option\n");
@@ -93,24 +94,11 @@ void show_email_option(Database* db) {
     puts("Enter the name of the email you wants : ");
     scanf("%s", mail_to_show);
 
-    //Searching for user email
+    //Searching for user email in db
     email = search_database_email_id(db, mail_to_show);
-    if (email != NULL) { //if user email geved is on db then we show it
-
-        //creating a valida path to get the file
-        strcpy(path, EM_STORE_PATH);
-        strcat(path, mail_to_show);
-        strcat(path, FILE_FORMAT);
-
-        email_file = fopen(path, FILE_READ_MODE); //Getting the email_file in  read mode
-
-        if (email_file == NULL) { //If any error log error msg
-            log_error(stdout, ERROR_MSG_FILE_NOT_FOUDN);
-        } else {
-            load_email_from_file(email_file, email); //reading email frile and print
-            fclose(email_file); //End up the file proces
-        }
-
+    if (email != NULL) {//if user email geved is on db then we show it
+        get_messages_info(email); //getting and setting the email with the email values on file
+        print_email(email); //printing the result
     } else
         log_info(stdout, EMAIL_INFO_NOT_IN_DB);
 
@@ -129,7 +117,7 @@ void create_email_option(Database* db) {
 
     log_info(stdout, "You have selected: Create email option\n");
 
-    init_email(&email); //setting up a default setment to email
+    init_email(&email); //setting up a default satement to email
     get_new_message_id(db, new_id); //generating a new id for the message
     get_new_unic_id(db); //generaing a unic id for the next email to creat
     strcpy(email.id, new_id); // setting the new id to email
@@ -141,21 +129,15 @@ void create_email_option(Database* db) {
     if (valid) {
         folder = get_database_folder(db, PROTECT_OUTBOX); //getting Outbox folder such that we can add the email to this folder
 
-        if (add_email_to_database(db, &email) == FALSE) {//adding email to db
-            log_error(stdout, ERROR_EMAIL_CANT_ADD_DB);
-            log_warn(stdout, ERROR_FOLDER_CANT_ADD_FIX);
+        if (add_email_to_folder(folder, &email) != FAIL) {
+            succes = store_email(&email); //Finaly writing the email to the emailDB
+            if (succes)
+                log_info(stdout, MESSAGE_EMAIL_CREATED);
+            else
+                log_error(stdout, ERROR_SAVING_FILE);
         } else {
-
-            if (add_email_to_folder(folder, &email)) {
-                log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);
-                log_warn(stdout, ERROR_EMAIL_CANT_ADD_FOLDER_FIX);
-            } else {
-                succes = store_email(&email); //Finaly writing the email to the emailDB
-                if (succes)
-                    log_info(stdout, MESSAGE_EMAIL_CREATED);
-                else
-                    log_error(stdout, ERROR_SAVING_FILE);
-            }
+            log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);
+            log_warn(stdout, ERROR_EMAIL_CANT_ADD_FOLDER_FIX);
         }
 
     } else

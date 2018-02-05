@@ -35,9 +35,9 @@ int main(int argc, char**argv) {
 
     if (result) { //if all goes well it show the menu for user to decide what to do
         menu(&db);
-        result = write_config(&db); //when the end of the app , it stors/update all the db info to the config file
+        /*result = write_config(&db); //when the end of the app , it stors/update all the db info to the config file
         if (result == FAIL)
-            log_error(stdin, ERROR_SAVING_CONIFG_FILE);
+            log_error(stdin, ERROR_SAVING_CONIFG_FILE);*/
     } else {
         log_error(stdin, ERROR_SPECIAL_EMConfig);
     }
