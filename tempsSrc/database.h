@@ -13,7 +13,7 @@
 #include "folder.h"
 
 #define MAX_FOLDERS 3
-#define MAX_EMAILS 4//3,4
+#define MAX_EMAILS 3
 
 typedef struct {
     int msg_id_seed;

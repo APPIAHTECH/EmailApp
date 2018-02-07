@@ -310,12 +310,14 @@ void search_string_option(Database* db) {
     scanf("%s", caracter);
 
     puts(ALL_MATCHED_EMAIL);
+    //For non empty email , searching for character
     for (i = 0; i < MAX_EMAILS; i++) {
-        if (sub_email(&db->emails[i], caracter)) {
-            printf(_SEARCH_MSG_RESULT, &db->emails[i].id);
-            founded++;
+        if (is_email_empty(&db->emails[i]) != TRUE) {
+            if (sub_email(&db->emails[i], caracter)) {
+                printf(_SEARCH_MSG_RESULT, &db->emails[i].id);
+                founded++;
+            }
         }
-
     }
     if (founded == 0)
         puts(_SEARCH_MSG_NO_RESULT);

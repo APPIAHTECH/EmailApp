@@ -262,25 +262,30 @@ int get_message(FILE *config_file, Database *db) {
 
                 //Setting email info
                 strcpy(email.id, email_name);
-                if (get_messages_info(&email) != FAIL) {
 
-                    temp_email = add_email_to_database(db, &email); //adding email to the db and returning a refrence to it
-                    if (temp_email != NULL) {
-                        db->folders[i].emails[j] = temp_email; //adding email to folder
-                        temp_email->referenced++;
-                        db->folders[i].empty = FALSE;
-                        j++;
-                    } else {
-                        //if cant add to db it means the email is already in db , so we get the reference from the db
-                        temp_email = search_database_email_id(db, email.id);
-                        db->folders[i].emails[j] = temp_email; //adding email to folder
-                        temp_email->referenced++;
-                        db->folders[i].empty = FALSE;
-                        temp_email = NULL;
-                    }
+                temp_email = search_database_email_id(db, email.id);
+                if (temp_email == NULL) {
 
-                } else
-                    return FAIL;
+                    if (get_messages_info(&email) != FAIL) {
+                        temp_email = add_email_to_database(db, &email); //adding email to the db and returning a refrence to it
+                        if (temp_email != NULL) {
+                            db->folders[i].emails[j] = temp_email; //adding email to folder
+                            temp_email->referenced++;
+                            db->folders[i].empty = FALSE;
+                            j++;
+                        }
+                    } else
+                        return FAIL;
+
+                } else {
+                    //if cant add to db it means the email is already in db , so we get the reference from the db
+                    temp_email = search_database_email_id(db, email.id);
+                    db->folders[i].emails[j] = temp_email;
+                    temp_email->referenced++;
+                    db->folders[i].empty = FALSE;
+                    temp_email = NULL;
+                }
+
             }
         }
     }
