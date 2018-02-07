@@ -32,5 +32,8 @@ void print_folder(Folder *folder);
 void print_database(Database *db);
 void str_sub_string(char *dest , char *src , int from , int to);
 void get_email_store_path(char *dest , char *email);
+void str_trim(char *dest , char *str);
+void str_remove_new_line(char *str);
+int sub_email(Email *email , char *caracter);
 #endif /* UTILS_H */
 

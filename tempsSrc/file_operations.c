@@ -23,14 +23,20 @@ int read_config(Database *db) {
     FILE *configuraionFile = NULL;
     int last_message_id = 0, result_get_folder, result_get_message;
 
+    if (db == NULL)
+        return FAIL;
+
     configuraionFile = fopen(EM_CONFIG_PATH, FILE_READ_MODE); //Getting the EMconfig.txt in  read mode
 
     if (configuraionFile == NULL) { //If any error log error msg
         display_error(ERROR_MSG_FILE_NOT_FOUDN);
         return FALSE;
     } else {
+
         last_message_id = get_message_id(configuraionFile);
+
         if (last_message_id != NOT_FOUNDED) { //if get_message_id found an valid ID
+
             db->msg_id_seed = last_message_id; //setting msg_id_seed to ID geted
             result_get_folder = get_folders(configuraionFile, db); //Getting folders from config file and storing to db
             result_get_message = get_message(configuraionFile, db); //Getting messages from config file and storing to db
@@ -38,6 +44,7 @@ int read_config(Database *db) {
             if (result_get_folder == SUCCESS && result_get_message == SUCCESS) //if could read and store file info
                 return TRUE;
         }
+
         fclose(configuraionFile); //End up the file proces
     }
 
@@ -55,9 +62,11 @@ int write_config(Database *db) {
     FILE *config_file = NULL;
     Folder * folder[MAX_FOLDERS];
     Email email;
-    int i, result, j, k;
-    ;
-    char format[MAX_BUF], str_num[MAX_BUF];
+    int result;
+    char format[MAX_BUF];
+
+    if (db == NULL)
+        return FAIL;
 
     config_file = fopen(EM_CONFIG_PATH, FILE_WRITE_MODE); //Getting the EMconfig.txt in  write mode
 
@@ -67,45 +76,23 @@ int write_config(Database *db) {
     } else {
 
         //Section Message-ID: n  Format 
-        strcpy(format, "Message-ID: ");
-        sprintf(str_num, "%d", db->msg_id_seed); //cast int value to string
-        strcat(format, str_num);
-        strcat(format, "\r\n");
-        strcat(format, "\r\n");
-
+        set_config_section_messageID(db, format);
         result = fputs(format, config_file);
 
         //Section Folders:
-        strcpy(format, "Folders:\r\n");
+        strcpy(format, FILE_FORMAT_CONFIG_STRUC_FOLDERS);
         result = fputs(format, config_file);
         get_database_folders(db, folder);
-        for (i = 0; i < MAX_FOLDERS; i++) {
-            strcpy(format, folder[i]->folder_name);
-            strcat(format, "\r\n");
-            result = fputs(format, config_file);
-        }
-        strcpy(format, "\r\n");
+        result = set_config_section_Folder(db, folder, config_file, format);
+        strcpy(format, NEW_LINE);
         result = fputs(format, config_file);
 
         //Section Folders Messages
-        for (i = 0; i < MAX_FOLDERS; i++) {
-            strcpy(format, folder[i]->folder_name);
-            strcat(format, " Messages:\r\n");
-            result = fputs(format, config_file);
+        set_config_section_Folder_MESSAGES(folder, config_file, format);
 
-
-            for (j = 0; j < MAX_FOLDER_EMAILS; j++) {
-                if (is_email_empty(folder[i]->emails[j]) != TRUE) { //Getting only position that as an email
-                    strcpy(format, folder[i]->emails[j]->id);
-                    strcat(format, "\r\n");
-                    result = fputs(format, config_file);
-                }
-            }
-            strcpy(format, "\r\n");
-            result = fputs(format, config_file);
-        }
-
+        //section end
         strcpy(format, FILE_END);
+
         result = fputs(format, config_file);
         if (result == EOF) //EOF f there was an error while writing to the file
         {
@@ -131,6 +118,9 @@ int store_email(Email* email) {
     char path[MAX_PATH];
     char id;
     int result = 0;
+
+    if (email == NULL)
+        return FAIL;
 
     //Creating path format
     get_email_store_path(path, email->id);
@@ -162,12 +152,11 @@ int get_folders(FILE *config_file, Database *db) {
     char buff[MAX_BUF]; //Use to store file string line (folder name)
     char folder_name[MAX_BUF]; //use to store folder value
     int id, matched, i, pos, result;
-    Folder folder;
+
+    if (config_file == NULL || db == NULL)
+        return FAIL;
 
     i = 0;
-    init_folder(&folder);
-    init_folder_emails(&folder, db);
-
     //Reading file line by line , getting folder names
     fgets(buff, MAX_BUF, config_file);
     while (!feof(config_file)) {
@@ -187,15 +176,14 @@ int get_folders(FILE *config_file, Database *db) {
             if (matched > 0) { // if a match according to format
 
                 //Setting up and Storing folder to DB
-                strcpy(folder.folder_name, folder_name);
+                strcpy(db->folders[i].folder_name, folder_name);
                 if (strcmp(folder_name, PROTECT_OUTBOX) == 0 || strcmp(folder_name, PROTECT_INBOX) == 0) // set to protected to true , folder inbox,outbox
-                    folder.protected = TRUE;
+                    db->folders[i].protected = TRUE;
 
-                folder.empty = FALSE;
-                folder.size = strlen(folder_name);
-                result = add_folder_to_database(db, &folder);
-                if (result == FAIL)
-                    return FAIL;
+                db->folders[i].size = strlen(folder_name);
+                db->folders[i] = db->folders[i];
+                db->folder_count++;
+                i++;
             }
         }
     }
@@ -214,6 +202,9 @@ int get_message_id(FILE *config_file) {
     char buff[MAX_BUF]; //Use to store file string line
     char message_text[MAX_BUF]; //user to store Message-ID: n
     int id, matched;
+
+    if (config_file == NULL)
+        return FAIL;
 
     fgets(buff, MAX_BUF, config_file); //Getting first line of the config file
     str_remove_trash(buff); //return str with a \0 where \r is
@@ -238,18 +229,23 @@ int get_message(FILE *config_file, Database *db) {
     int id, matched, i = 0, pos = 0, j = 0;
     Email email, *temp_email;
 
+    if (config_file == NULL || db == NULL)
+        return FAIL;
+
     init_email(&email);
     i = 0; // i represent curent folder
-    j = 0;
+    j = 0; // j represent curent folder emails
+
     //Reading file line by line 
     fgets(buff, MAX_BUF, config_file);
     while (!feof(config_file)) {
 
         fgets(buff, MAX_BUF, config_file);
-        if (strcmp(buff, NEW_LINE) == 0) //if a new line increment i , meaning there is a new eamil secction to read
+        if (strcmp(buff, NEW_LINE) == 0) //if a new line increment i , meaning there is a new eamil section to read
         {
-            i++; //to store next email secction
-            j = 0; //represents emails to be read and store
+            i++; //to store next email sectoion
+            j = 0; //setting j = 0 coz there is a new email section coming
+            continue;
         }
 
         str_remove_trash(buff); //return str with a \0 where \r is
@@ -266,17 +262,25 @@ int get_message(FILE *config_file, Database *db) {
 
                 //Setting email info
                 strcpy(email.id, email_name);
-                email.referenced = UNDEFINED;
-                email.empty = FALSE;
+                if (get_messages_info(&email) != FAIL) {
 
-                temp_email = add_email_to_database(db, &email); //adding email to the db and returning a refrence to it
-                if (temp_email == NULL)
+                    temp_email = add_email_to_database(db, &email); //adding email to the db and returning a refrence to it
+                    if (temp_email != NULL) {
+                        db->folders[i].emails[j] = temp_email; //adding email to folder
+                        temp_email->referenced++;
+                        db->folders[i].empty = FALSE;
+                        j++;
+                    } else {
+                        //if cant add to db it means the email is already in db , so we get the reference from the db
+                        temp_email = search_database_email_id(db, email.id);
+                        db->folders[i].emails[j] = temp_email; //adding email to folder
+                        temp_email->referenced++;
+                        db->folders[i].empty = FALSE;
+                        temp_email = NULL;
+                    }
+
+                } else
                     return FAIL;
-                else {
-                    db->folders[i].emails[j] = temp_email; //adding email to folder
-                    db->folders[i].empty = FALSE;
-                    j++;
-                }
             }
         }
     }
@@ -284,14 +288,25 @@ int get_message(FILE *config_file, Database *db) {
     return SUCCESS;
 }
 
+/**
+ * 
+ * @param email
+ * @return 
+ */
 int get_messages_info(Email *email) {
 
     //Variables declarations
     FILE *file = NULL;
     char path[MAX_BUF];
+    char *message_id;
+
+
+    if (email == NULL)
+        return FAIL;
 
     //setting the file path
-    get_email_store_path(path, email->id);
+    message_id = get_email_id(email);
+    get_email_store_path(path, message_id);
     file = fopen(path, FILE_READ_MODE);
 
     if (file == NULL) { //If any error log error msg
@@ -299,11 +314,66 @@ int get_messages_info(Email *email) {
     } else {
 
         if (load_email_from_file(file, email) != FAIL) //reading email file and saveing it on email structure
+        {
+            fclose(file);
             return SUCCESS;
+        }
 
-        fclose(file); //End up the file proces
+    }
+    fclose(file);
+    return FAIL;
+}
+
+void set_config_section_messageID(Database *db, char *format) {
+
+    //Variable declarations
+    char str_num[MAX_BUF];
+
+    strcpy(format, FILE_FORMAT_CONFIG_STRUC_MESSAGES);
+    sprintf(str_num, "%d", db->msg_id_seed); //cast int value to string
+    strcat(format, str_num);
+    strcat(format, NEW_LINE);
+    strcat(format, NEW_LINE);
+}
+
+int set_config_section_Folder(Database *db, Folder *folder[MAX_FOLDERS], FILE *config_file, char *format) {
+    //Variable declarations
+    int i = 0, result;
+
+    for (i = 0; i < MAX_FOLDERS; i++) {
+        if (strcmp(folder[i]->folder_name, FOLDER_INIT_NAME) != 0) {
+            strcpy(format, folder[i]->folder_name);
+            strcat(format, NEW_LINE);
+            result = fputs(format, config_file);
+        }
+
     }
 
-    return FAIL;
+    return result;
+}
 
+int set_config_section_Folder_MESSAGES(Folder *folder[MAX_FOLDERS], FILE *config_file, char *format) {
+
+    //Variable declarations
+    int i = 0, j = 0, result;
+
+    for (i = 0; i < MAX_FOLDERS; i++) {
+        if (strcmp(folder[i]->folder_name, FOLDER_INIT_NAME) != 0) {
+            strcpy(format, folder[i]->folder_name);
+            strcat(format, FILE_FORMAT_CONFIG_STRUC_MESSAGES_FOLDER_SECTION);
+            result = fputs(format, config_file);
+
+            for (j = 0; j < MAX_FOLDER_EMAILS; j++) {
+                if (folder[i]->emails[j] != NULL) { //Getting only position that as an email
+                    strcpy(format, folder[i]->emails[j]->id);
+                    strcat(format, NEW_LINE);
+                    result = fputs(format, config_file);
+                }
+            }
+            strcpy(format, NEW_LINE);
+            result = fputs(format, config_file);
+        }
+    }
+
+    return result;
 }

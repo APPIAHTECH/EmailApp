@@ -1,8 +1,0 @@
-Date: Mon Feb  5 18:45:23 2018
-
-From: <test@gmail.com>
-To: <test2@gmail.com>
-Message-ID: 3_EDA_email
-Subject: hey
-
-como

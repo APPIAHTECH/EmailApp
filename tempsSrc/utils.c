@@ -67,12 +67,13 @@ void display_error(char *msg) {
  */
 void print_email(Email *email) {
 
-    printf("Date %s \n", email->date);
-    printf("ID %s \n", email->id);
-    printf("From %s \n", email->from);
-    printf("To %s \n", email->to);
-    printf("Subject %s \n", email->subject);
-    printf("Message %s \n", email->body);
+    printf(EMAIL_STRUCTURE_DATE, email->date);
+    printf(EMAIL_STRUCTURE_ID, email->id);
+    printf(EMAIL_STRUCTURE_FROM, email->from);
+    printf(EMAIL_STRUCTURE_TO, email->to);
+    printf(EMAIL_STRUCTURE_SUBJECT, email->subject);
+    printf(EMAIL_STRUCTURE_BODY, email->body);
+    /**NOTE RECORDAR COMENTAR!*/
     printf("Empty %d \n", email->empty);
     printf("Referenced %d \n", email->referenced);
 }
@@ -84,16 +85,19 @@ void print_email(Email *email) {
 void print_folder(Folder *folder) {
 
     int i;
-    printf("Folder name : %s \n", folder->folder_name);
-    printf("Empty %d \n", folder->empty);
-    printf("Size %d \n", folder->size);
-    printf("Protected %d \n", folder->protected);
-    printf("------------------------------\n");
-    printf("Folder Emails Llist\n\n");
+
+    printf(FOLDER_STRUCTURE_NAME, folder->folder_name);
+    printf(FOLDER_STRUCTURE_EMPTY, folder->empty);
+    printf(FOLDER_STRUCTURE_SIZE, folder->size);
+    printf(FOLDER_STRUCTURE_PROTECTED, folder->protected);
+    printf(LINE);
+    printf(FOLDER_STRUCTURE_FOLDER_MAILS_LIST);
 
     for (i = 0; i < MAX_FOLDER_EMAILS; i++) {
-        print_email(folder->emails[i]);
-        printf("------------------------------\n");
+        if (folder->emails[i] != NULL) {
+            print_email(folder->emails[i]);
+            printf(LINE);
+        }
     }
 
 }
@@ -104,23 +108,23 @@ void print_folder(Folder *folder) {
  */
 void print_database(Database *db) {
 
-    int i = 0, j = 0;
+    int i = 0;
 
-    puts("Database");
-    puts("------------------------------");
-    printf("Message ID %d \n", db->msg_id_seed);
-    printf("Email count %d \n", db->email_count);
-    printf("Folder count %d \n", db->folder_count);
-    puts("------------------------------");
-    puts("Emails Llist");
+    puts(DATABASE_STRUCTURE);
+    puts(LINE);
+    printf(DATABASE_STRUCTURE_MSG_ID, db->msg_id_seed);
+    printf(DATABASE_STRUCTURE_EMAIL_COUNT, db->email_count);
+    printf(DATABASE_STRUCTURE_FOLDER_COUNT, db->folder_count);
+    puts(LINE);
+    puts(DATABASE_STRUCTURE_EMAIL_LIST);
 
     for (i = 0; i < MAX_EMAILS; i++)
         print_email(&db->emails[i]);
 
-    puts("------------------------------");
-    puts("Folders Llist");
+    puts(LINE);
+    puts(DATABASE_STRUCTURE_FOLDER_LIST);
     for (i = 0; i < MAX_FOLDERS; i++) {
-        printf("Folder %d \n", i);
+        printf(_FOLDER_TO_PRINT, &db->folders[i].folder_name, i);
         print_folder(&db->folders[i]);
     }
 
@@ -144,7 +148,7 @@ void str_remove_trash(char *buff) {
 
     buff = strchr(buff, '\r');
     if (buff != NULL)
-        *buff = '\0';
+        *buff = EMPTY; //to determinate where the str ends
 }
 
 /**
@@ -185,6 +189,11 @@ void str_sub_string(char *dest, char *src, int from, int to) {
     }
 }
 
+/**
+ * returns emailDB/name of email if . txt
+ * @param dest
+ * @param email
+ */
 void get_email_store_path(char *dest, char *email) {
 
     char path[MAX_PATH];
@@ -194,4 +203,70 @@ void get_email_store_path(char *dest, char *email) {
     strcat(path, FILE_FORMAT);
 
     strcpy(dest, path);
+}
+
+/**
+ * returns a str dest with no white space at first and last position
+ * @param src_dest
+ * @param src
+ */
+void str_trim(char *dest, char *str) {
+
+    char *end;
+    int white_space = ' ';
+
+    //detecting white space , and moving forward
+    while (*str == white_space)
+        str++;
+
+    end = str + strlen(str) - 1;
+    while (end > str && *end == white_space)
+        end--;
+
+    // Write new null terminator
+    *(end + 1) = EMPTY;
+
+    strcpy(dest, str);
+}
+
+/**
+ * 
+ * @param str
+ */
+void str_remove_new_line(char *str) {
+
+    str = strchr(str, '\n');
+    if (str != NULL)
+        *str = EMPTY;
+}
+
+/**
+ * return true if a email contains caracter else fale
+ * @param email
+ * @param caracter
+ * @return 
+ */
+int sub_email(Email *email, char *caracter) {
+
+    //Variable declaration
+    int pos_id = -1, pos_body = -1, pos_date = -1;
+    int pos_from = -1, pos_to = -1, pos_sub = -1;
+
+    if (email == NULL && caracter == NULL)
+        return FAIL;
+
+    //Finding a match in email fields
+    pos_id = index_of(email->id, caracter);
+    pos_body = index_of(email->body, caracter);
+    pos_date = index_of(email->date, caracter);
+    pos_from = index_of(email->from, caracter);
+    pos_to = index_of(email->to, caracter);
+    pos_sub = index_of(email->subject, caracter);
+
+    //returning succes if matched in any field of email
+    if (pos_id > 0 || pos_body > 0 || pos_date > 0 || pos_from > 0 || pos_to > 0 || pos_sub > 0)
+        return TRUE;
+
+    return FALSE;
+
 }

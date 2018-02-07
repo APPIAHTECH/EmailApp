@@ -18,25 +18,19 @@
  */
 void init_folder(Folder* folder) {
 
+    //Variables dec
+    int i;
+
     //Defautl folder structure
     strcpy(folder->folder_name, FOLDER_INIT_NAME);
     folder->empty = TRUE;
     folder->protected = FALSE;
     folder->size = UNDEFINED;
 
-}
-
-/**
- * Initializes all emails that folder holds with a default structure
- * @param folder
- */
-void init_folder_emails(Folder* folder, Database *db) {
-    //Variable declarations
-    int i, j, k;
-
+    //folder Initialization and emails
     for (i = 0; i < MAX_FOLDER_EMAILS; i++)
-        for (j = 0; j < MAX_EMAILS; j++)
-            folder->emails[i] = &db->emails[j];
+        folder->emails[i] = NULL;
+
 }
 
 /**
@@ -114,12 +108,15 @@ int add_email_to_folder(Folder* folder, Email* email) {
 
     //Variable declarations
     int i = 0;
-    //Cheking if position where to store email is empty. if is empty we store the new email to that folder email position
-    for (i = 0; i < MAX_FOLDER_EMAILS; i++) {
-        if (is_email_empty(folder->emails[i])) {
-            email->referenced++;
-            copy_email(folder->emails[i], email);
-            return SUCCESS;
+
+    if (folder != NULL && email != NULL) {
+        //Cheking if position where to store email is empty. if is empty we store the new email to that folder email position
+        for (i = 0; i < MAX_FOLDER_EMAILS; i++) {
+            if (folder->emails[i] == NULL) {
+                email->referenced++;
+                folder->emails[i] = email;
+                return SUCCESS;
+            }
         }
     }
     return FAIL;
@@ -153,7 +150,7 @@ void copy_folder(Folder* dest_folder, Folder* src_folder) {
 void read_folder_interactive(Folder* folder) {
 
     //Getting folder info
-    printf("Folder name : \n");
+    printf(EMAIL_INTERACTIVE_FOLDER_NAME);
     scanf("%s", folder->folder_name);
     folder->size = strlen(folder->folder_name);
 }

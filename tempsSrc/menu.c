@@ -58,22 +58,18 @@ int query_option() {
 void list_emails_option(Database* db) {
 
     //Variables declarations
-    int i = 0, j = 0;
+    int i = 0;
 
     log_info(stdout, "You have selected: List emails option\n");
 
-    //TODO : EMAIL BODY IF LENGHT IS LES THAN 200 CARACTERS
-    //Printing all existing emails
-    //NO FUNCIONA BIEN!!!!
-    puts("All Emails :");
-    puts("------------------------------");
+    puts(ALL_EMAIL);
+    puts(LINE);
     for (i = 0; i < MAX_EMAILS; i++) {
+
         if (is_email_empty(&db->emails[i]) != TRUE) { // if positon reading is empty we dont print else that means there is a email we can print
-            printf("Email : %d \n", i + 1);
-            if (get_messages_info(&db->emails[i]) != FAIL) {
-                print_email(&db->emails[i]);
-                puts("------------------------------");
-            }
+            printf(_EMAIL_TO_PRINT, i);
+            print_email(&db->emails[i]);
+            puts(LINE);
         }
     }
 }
@@ -85,22 +81,24 @@ void list_emails_option(Database* db) {
 void show_email_option(Database* db) {
 
     //Variables declarations
-    char mail_to_show[MAX_BUF];
+    char mail_to_show[MAX_EMAIL_ID];
     Email *email;
 
     log_info(stdout, "You have selected: Show email option\n");
 
     //User input value
-    puts("Enter the name of the email you wants : ");
+    puts(MESSAGE_EMAIL_ENTER_NAME);
     scanf("%s", mail_to_show);
 
     //Searching for user email in db
     email = search_database_email_id(db, mail_to_show);
-    if (email != NULL) {//if user email geved is on db then we show it
-        get_messages_info(email); //getting and setting the email with the email values on file
+
+    if (email != NULL)
         print_email(email); //printing the result
-    } else
+    else
         log_info(stdout, EMAIL_INFO_NOT_IN_DB);
+
+
 
 }
 
@@ -111,7 +109,7 @@ void show_email_option(Database* db) {
 void create_email_option(Database* db) {
 
     //Variables declarations
-    Email email;
+    Email email, *temp;
     Folder *folder = NULL;
     char new_id[MAX_BUF], valid, succes;
 
@@ -125,20 +123,31 @@ void create_email_option(Database* db) {
 
     valid = validate_email(&email);
 
-    //TODO , ARREGLAR NO PETA ,PERO AÑADE EL EMAIL EN TEST TAMBIEN WTF!!!!!!!!
     if (valid) {
         folder = get_database_folder(db, PROTECT_OUTBOX); //getting Outbox folder such that we can add the email to this folder
+        temp = add_email_to_database(db, &email);
 
-        if (add_email_to_folder(folder, &email) != FAIL) {
-            succes = store_email(&email); //Finaly writing the email to the emailDB
-            if (succes)
-                log_info(stdout, MESSAGE_EMAIL_CREATED);
-            else
-                log_error(stdout, ERROR_SAVING_FILE);
+        if (folder != NULL) { //if it founds  Outbox folder 
+            if (temp != NULL) {
+                if (add_email_to_folder(folder, temp) != FAIL) {
+                    succes = store_email(temp); //Finaly writing the email to the emailDB
+                    if (succes)
+                        log_info(stdout, MESSAGE_EMAIL_CREATED);
+                    else
+                        log_error(stdout, ERROR_SAVING_FILE);
+                } else {
+                    log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);
+                    log_warn(stdout, ERROR_EMAIL_CANT_ADD_FOLDER_FIX);
+                }
+            } else {
+                log_error(stdout, ERROR_EMAIL_CANT_ADD_DB);
+                log_warn(stdout, ERROR_EMAIL_CANT_ADD_DB_FIX);
+            }
         } else {
-            log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);
-            log_warn(stdout, ERROR_EMAIL_CANT_ADD_FOLDER_FIX);
+            log_error(stdout, ERROR_CAN_FIND_OUTBOX);
+            log_warn(stdout, ERROR_SPECIAL_EMConfig);
         }
+
 
     } else
         log_error(stdout, ERROR_MAIL_INVALID);
@@ -162,24 +171,26 @@ void show_folder_option(Database* db) {
     int i, j, total_email, total_folder;
 
     log_info(stdout, "You have selected: Show folder option\n");
-    puts("Folder Emails :");
 
+    //Print sections
+    puts(ALL_FOLDER);
     total_folder = get_database_folder_count(db);
     total_email = get_database_email_count(db);
 
-    printf("Total Folders :%d\n", total_folder);
-    printf("Total Emails :%d \n", total_email);
-    puts("------------------------------");
+    printf(_FOLDER_TOTAL_PRINT, total_folder);
+    printf(_EMAIL_TOTAL_PRINT, total_email);
+    puts(LINE);
 
+    //For each folder and for each folder email we print they values
     for (i = 0; i < MAX_FOLDERS; i++) {
 
-        if (is_folder_empty(&db->folders[i]) != TRUE) { //if folder is empty we dont print it
-            printf("Folder [%s] : %d \n", db->folders[i].folder_name, i + 1);
-            for (j = 0; j < MAX_FOLDER_EMAILS; j++) {
+        if (strcmp(db->folders[i].folder_name, FOLDER_INIT_NAME) != 0) { //if the folder contains a default value , it means is an empty folder in memory so we don't print it
+            printf(_FOLDER_TO_PRINT, db->folders[i].folder_name, i);
 
-                if (is_email_empty(db->folders[i].emails[j]) != TRUE) { //if email is empty we dont print it
+            for (j = 0; j < MAX_FOLDER_EMAILS; j++) {
+                if (db->folders[i].emails[j] != NULL) { //if email is empty we dont print it
                     print_email(db->folders[i].emails[j]);
-                    printf("------------------------------\n");
+                    printf(LINE);
                 }
 
             }
@@ -199,6 +210,8 @@ void create_folder_option(Database* db) {
     int result;
 
     log_info(stdout, "You have selected: Create folder option\n");
+
+    init_folder(&folder);
     read_folder_interactive(&folder); //getting user input for folder setting
 
     //searching for folder that user specify, if match it means there is already a foldername with that name
@@ -243,28 +256,33 @@ void add_email_to_folder_option(Database* db) {
     log_info(stdout, "You have selected: Add email to folder option\n");
 
     //User input value
-    puts("Enter the name of the email you wants add to the folder: ");
+    puts(MESSAGE_EMAIL_TO_ADD_FOLDER);
     scanf("%s", mail_to_add);
 
-    puts("Enter the name of the folder you wants the email to be add: ");
+    puts(MESSAGE_FOLDER_EMAIL_TO_ADD);
     scanf("%s", folder_to_store);
 
-    //Searching for user email
+    //Finding the email on the forder
     email = search_database_email_id(db, mail_to_add);
-    folder = get_database_folder(db, folder_to_store);
-    if (email != NULL) { //if there exist the email 
+    if (email == NULL) //if can't find email specify
+        log_info(stdout, EMAIL_INFO_NOT_IN_DB);
+    else {
+        folder = get_database_folder(db, folder_to_store);
+        if (folder == NULL)//if can't find folder specify
+            log_error(stdout, FOLDER_INFO_NOT_IN_DB);
+        else {
+            if (add_email_to_folder(folder, email) == SUCCESS) {
+                log_info(stdout, MESSAGE_EMAIL_ADDED_FOLDER);
+            } else {
+                log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);
+                log_warn(stdout, ERROR_EMAIL_CANT_ADD_FOLDER_FIX);
+            }
+        }
 
-        if (folder != NULL) {//if there exist the folder 
+    }
 
-            //Finding the email on the forder , if is already in that folder
-            //NOTE preguntar si los emails puden ser dublicados , en un mismo folder
-            add_email_to_database(db, email);
-            add_email_to_folder(folder, email);
-            log_info(stdin, MESSAGE_EMAIL_ADDED_FOLDER);
-        } else
-            log_info(stdin, FOLDER_INFO_NOT_IN_DB);
-    } else
-        log_info(stdin, EMAIL_INFO_NOT_IN_DB);
+
+
 
 }
 
@@ -281,7 +299,26 @@ void remove_email_from_folder_option(Database *db) {
  * @param db
  */
 void search_string_option(Database* db) {
+    //Variable declaration
+    int i = 0, founded = 0;
+    char caracter[MAX_BUF];
+
     log_info(stdout, "You have selected: Search string option\n");
+
+    //Getting caracter info
+    printf(_SEARCH_MSG);
+    scanf("%s", caracter);
+
+    puts(ALL_MATCHED_EMAIL);
+    for (i = 0; i < MAX_EMAILS; i++) {
+        if (sub_email(&db->emails[i], caracter)) {
+            printf(_SEARCH_MSG_RESULT, &db->emails[i].id);
+            founded++;
+        }
+
+    }
+    if (founded == 0)
+        puts(_SEARCH_MSG_NO_RESULT);
 }
 
 /**

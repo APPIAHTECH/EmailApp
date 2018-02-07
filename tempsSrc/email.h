@@ -39,6 +39,13 @@ void read_email_interactive(Email* email);
 int load_email_from_file(FILE* fd, Email *email);
 int write_email_to_file(FILE* fd, Email* email);
 
+int email_to_file_section_date(Email *email, FILE *fd, char *format, int *result);
+int email_to_file_section_from(Email *email, FILE *fd, char *format, int *result);
+int email_to_file_section_to(Email *email, FILE *fd, char *format, int *result);
+int email_to_file_section_messageid(Email *email, FILE *fd, char *format, int *result);
+int email_to_file_section_subject(Email *email, FILE *fd, char *format, int *result);
+int email_to_file_section_body(Email *email, FILE *fd, char *format, int *result);
+
 int validate_email(Email *email);
 
 int is_valid_email(char *email);

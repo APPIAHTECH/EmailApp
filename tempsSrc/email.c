@@ -38,16 +38,14 @@ void init_email(Email* email) {
  */
 void copy_email(Email* dest_email, Email* src_email) {
 
-    if (dest_email != NULL && src_email != NULL) {
-        strcpy(dest_email->id, src_email->id);
-        strcpy(dest_email->body, src_email->body);
-        strcpy(dest_email->date, src_email->date);
-        strcpy(dest_email->from, src_email->from);
-        strcpy(dest_email->to, src_email->to);
-        strcpy(dest_email->subject, src_email->subject);
-        dest_email->empty = src_email->empty;
-        dest_email->referenced = src_email->referenced;
-    }
+    strcpy(dest_email->id, src_email->id);
+    strcpy(dest_email->body, src_email->body);
+    strcpy(dest_email->date, src_email->date);
+    strcpy(dest_email->from, src_email->from);
+    strcpy(dest_email->to, src_email->to);
+    strcpy(dest_email->subject, src_email->subject);
+    dest_email->empty = src_email->empty;
+    dest_email->referenced = src_email->referenced;
 }
 
 /**
@@ -104,24 +102,36 @@ void set_email_date(Email* email) {
  */
 void read_email_interactive(Email* email) {
 
-    //Variables declarations
-    int referenced_to_out_box = 1;
+    char temp[DEFAULT_MAX_FIELD];
+    char body[MAX_BODY];
 
     //Getting email info
     set_email_date(email);
     printf(EMAIL_INTERACTIVE_FROM);
-    scanf("%s", email->from);
+    fgets(temp, DEFAULT_MAX_FIELD, stdin);
+
+    //removing left and right white spaces and \n such that we only read text without first and last withe space
+    str_remove_new_line(temp);
+    str_trim(email->from, temp);
 
     printf(EMAIL_INTERACTIVE_TO);
-    scanf("%s", email->to);
+    fgets(temp, DEFAULT_MAX_FIELD, stdin);
+
+    str_remove_new_line(temp);
+    str_trim(email->to, temp);
 
     printf(EMAIL_INTERACTIVE_SUBJECT);
-    scanf("%s", email->subject);
+    fgets(email->subject, DEFAULT_MAX_FIELD, stdin);
+
+    str_remove_new_line(temp);
+    str_trim(email->subject, temp);
 
     printf(EMAIL_INTERACTIVE_MESSAGE);
-    scanf("%s", email->body);
-    email->referenced = referenced_to_out_box;
-    email->empty = FALSE;
+    fgets(body, MAX_BODY, stdin);
+
+    str_remove_new_line(body);
+    str_trim(email->body, body);
+
 }
 
 /**
@@ -133,8 +143,15 @@ void read_email_interactive(Email* email) {
 int load_email_from_file(FILE* fd, Email *email) {
 
     //Variables declarations
-    char buff[MAX_BUF], temp[MAX_BUF], header[MAX_BUF], body[MAX_BUF];
-    int pos, matched;
+    char buff[MAX_BUF], temp[MAX_BUF], header[MAX_BUF], str_body[MAX_BUF];
+    int pos, matched, str_body_len, str_to_entry;
+
+    if (fd == NULL || email == NULL)
+        return FAIL;
+
+    memset(str_body, EMPTY, MAX_BUF); //int str all pos with \0
+    str_body_len = 0;
+    str_to_entry = 0;
 
     fgets(buff, MAX_BUF, fd);
     while (!feof(fd)) {
@@ -143,11 +160,13 @@ int load_email_from_file(FILE* fd, Email *email) {
         if (matched > 0) {
             pos = index_of(buff, FORMAT_FIELD_HEADERS);
 
-            if (pos > 0) {
-                pos += 2; // +2 ,for getting the line without the first 2 white spaces 
-                str_sub_string(temp, buff, pos, MAX_BUF);
+            if (pos > 0) { //if it could find a : that means there was a header format
+
+                str_remove_new_line(buff); //for getting the line without the first 2 white spaces 
+                str_trim(temp, buff);
 
                 //PREGUNTAR SI FROM Y TO TENEMOS QUE SACAR LOS MAILS QUE ESTAN DENTRO DE <MAIL>???
+                //Setting up email information acording to each field
                 if (strcmp(header, EMAIL_FILE_STRUC_DATE) == 0)
                     strcpy(email->date, temp);
 
@@ -159,15 +178,26 @@ int load_email_from_file(FILE* fd, Email *email) {
 
                 else if (strcmp(header, EMAIL_FILE_STRUC_SUBJECT) == 0)
                     strcpy(email->subject, temp);
-            } else {
-                if (strcmp(buff, NEW_LINE) != 0)
-                    strcat(body, buff);
+
+            } else { // if there were not a header format that means it contains emails body
+                if (strcmp(buff, NEW_LINE) != 0) //if linea we are reading is not a line we add it to the str_body , such that str_body contains all the email body info
+                {
+                    //This secction dosen't allow a body of more than MAX_BODY can be store to the body of the email
+                    //Getting the str_body that holds the result of all the body concatenated
+                    str_body_len = strlen(str_body);
+                    str_to_entry = strlen(buff); // the lenght of the line to be store
+
+                    if (str_body_len + str_to_entry < MAX_BODY) //if the sum of the lenght of the str_body_len and str_to_entry , is greather than MAX_BODY , it means  the total amount is overpased the MAX_BODY so we dont add it to the str_body
+                        strcat(str_body, buff);
+                }
+
             }
         }
-        fgets(buff, MAX_BUF, fd);
-        strcpy(email->body, body);
+        fgets(buff, MAX_BUF, fd); //getting next line
     }
 
+    //Storing body data to email body
+    strcpy(email->body, str_body);
     return SUCCESS;
 }
 
@@ -183,52 +213,28 @@ int write_email_to_file(FILE* fd, Email* email) {
     char format[MAX_BUF];
     int result;
 
-    //Creating email file format
-    strcpy(format, "Date: ");
-    strcat(format, email->date);
-    strcat(format, "\r\n");
-    result = fputs(format, fd);
-    strcpy(format, "\0");
+    if (fd != NULL && email != NULL) {
+        //Creating email file format
 
-    strcat(format, "From: ");
-    strcat(format, "<");
-    strcat(format, email->from);
-    strcat(format, ">");
-    strcat(format, "\r\n");
-    result = fputs(format, fd);
-    strcpy(format, "\0");
+        //Date section
+        email_to_file_section_date(email, fd, format, &result);
+        //From secttion
+        email_to_file_section_from(email, fd, format, &result);
+        //Message-ID section
+        email_to_file_section_messageid(email, fd, format, &result);
+        //Subject Section
+        email_to_file_section_subject(email, fd, format, &result);
+        //Body Section
+        email_to_file_section_body(email, fd, format, &result);
 
-    strcat(format, "To: ");
-    strcat(format, "<");
-    strcat(format, email->to);
-    strcat(format, ">");
-    strcat(format, "\r\n");
-    result = fputs(format, fd);
-    strcpy(format, "\0");
+        if (result != EOF) //EOF determinats if there was an error while writing to the file
+            return SUCCESS;
+        else
+            return FAIL;
 
-    strcat(format, "Message-ID: ");
-    strcat(format, email->id);
-    strcat(format, "\r\n");
-
-    result = fputs(format, fd);
-    strcpy(format, "\0");
-
-    strcat(format, "Subject: ");
-    strcat(format, email->subject);
-    strcat(format, "\r\n");
-    result = fputs(format, fd);
-    strcpy(format, "\0");
-
-    result = fputs("\r\n", fd);
-    strcat(format, email->body);
-    strcat(format, "\r\n");
-    result = fputs(format, fd);
-    strcpy(format, "\0");
-
-    if (result != EOF) //EOF determinats if there was an error while writing to the file
-        return SUCCESS;
-    else
+    } else
         return FAIL;
+
 }
 
 /**
@@ -266,4 +272,54 @@ int is_valid_email(char *email) {
  */
 int is_valid_message(char *message) {
     return 0;
+}
+
+int email_to_file_section_date(Email *email, FILE *fd, char *format, int *result) {
+
+    strcpy(format, EMAIL_FILE_STRUC_DATE_STORE);
+    strcat(format, email->date);
+    strcat(format, NEW_LINE);
+    *result = fputs(format, fd);
+}
+
+int email_to_file_section_from(Email *email, FILE *fd, char *format, int *result) {
+
+    strcpy(format, EMAIL_FILE_STRUC_FROM_STORE);
+    strcat(format, ARROW_LESS);
+    strcat(format, email->from);
+    strcat(format, ARROW_BID);
+    strcat(format, NEW_LINE);
+    *result = fputs(format, fd);
+}
+
+int email_to_file_section_to(Email *email, FILE *fd, char *format, int *result) {
+
+    strcpy(format, EMAIL_FILE_STRUC_TO_STORE);
+    strcat(format, ARROW_LESS);
+    strcat(format, email->to);
+    strcat(format, ARROW_BID);
+    strcat(format, NEW_LINE);
+    *result = fputs(format, fd);
+}
+
+int email_to_file_section_messageid(Email *email, FILE *fd, char *format, int *result) {
+    strcpy(format, EMAIL_FILE_STRUC_MESSAGEID_STORE);
+    strcat(format, email->id);
+    strcat(format, NEW_LINE);
+    *result = fputs(format, fd);
+}
+
+int email_to_file_section_subject(Email *email, FILE *fd, char *format, int *result) {
+    strcpy(format, EMAIL_FILE_STRUC_SUBJECT_STORE);
+    strcat(format, email->subject);
+    strcat(format, NEW_LINE);
+    *result = fputs(format, fd);
+}
+
+int email_to_file_section_body(Email *email, FILE *fd, char *format, int *result) {
+
+    *result = fputs(NEW_LINE, fd);
+    strcpy(format, email->body);
+    strcat(format, NEW_LINE);
+    *result = fputs(format, fd);
 }

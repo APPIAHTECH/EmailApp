@@ -12,8 +12,8 @@
 #include "email.h"
 #include "folder.h"
 
-#define MAX_FOLDERS 4
-#define MAX_EMAILS 5//3
+#define MAX_FOLDERS 3
+#define MAX_EMAILS 4//3,4
 
 typedef struct {
     int msg_id_seed;
@@ -42,7 +42,6 @@ Folder* get_database_folder(Database* db, char* target_name);
 Folder* create_database_folder(Database* db, char* folder_name);
 int delete_database_folder(Database* db, Folder* folder);
 
-void init_folder_emails(Folder* folder, Database *db);
 int add_folder_to_database(Database* db, Folder* src_folder);
 void get_new_unic_id(Database* db);
 #endif /* DATABASE_H */
