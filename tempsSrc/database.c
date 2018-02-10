@@ -1,8 +1,14 @@
 /* 
- * File:  
- * Author: 
+ * File:Database.c   
+ * Author:Stephen Appiah
+ * DATE: 09/01/2018
+ * Version : 1.0
  *
- * Fill Header!!
+ * 
+ * This file describes the database methods related to the database header
+ * The general purpose of the file if to serve the different functionality of the database, 
+ * such as init the database structure ,add folder , etc.
+ * 
  */
 
 
@@ -21,16 +27,16 @@ void init_database(Database *db, int initial_msg_id) {
     //Variable declarations
     int i = 0;
 
-    //Initialization of fields of Database by default values
+    //initialization of fields of database by default values
     db->email_count = UNDEFINED;
     db->folder_count = UNDEFINED;
     db->msg_id_seed = initial_msg_id;
 
-    //Initialization every email 
+    //initialization every email 
     for (i = 0; i < MAX_EMAILS; i++)
         init_email(&db->emails[i]);
 
-    //folder Initialization and emails
+    //folder initialization and emails
     for (i = 0; i < MAX_FOLDERS; i++)
         init_folder(&db->folders[i]);
 
@@ -58,11 +64,13 @@ int get_database_emails(Database* db, Email* emails[]) {
     int email_quantity = 0, i;
 
     if (db != NULL && emails != NULL) {
-        //For each email in db 
-        for (i = 0; i < MAX_FOLDERS; i++) {
+
+        //For each email in db we fills the parameter emails with the pointers to the emails
+        for (i = 0; i < MAX_FOLDERS; i++)
             emails[i] = &db->emails[i];
-            email_quantity = i;
-        }
+
+        //Gets the email counts of the db 
+        email_quantity = get_database_email_count(db);
     }
 
     return email_quantity;
@@ -80,7 +88,7 @@ Email* search_database_email_id(Database* db, char* target_id) {
     //Variable declarations
     int i = 0;
 
-    //For each email in db
+    //For each email in db , if the target email is found we return a referenced to it 
     if (target_id != NULL && db != NULL) {
         for (i = 0; i < MAX_EMAILS; i++) {
             if (strcmp(db->emails[i].id, target_id) == 0) //if db email is equals to target_id
@@ -107,8 +115,8 @@ void get_new_message_id(Database* db, char buf[]) {
         last_id_gen++;
 
         sprintf(str_num, "%d", last_id_gen); //cast int value to string
-        strcpy(temp, str_num); // adding id 
-        strcat(temp, EMAIL_INIT_ID); // adding _EDA_email
+        strcpy(temp, str_num); // concatenating id 
+        strcat(temp, EMAIL_INIT_ID); // concatenating _EDA_email
         strcpy(buf, temp); //storing result to buff
     }
 }
@@ -127,9 +135,11 @@ Email* add_email_to_database(Database* db, Email* src_email) {
     int i;
 
     if (db != NULL && src_email != NULL) {
+
         //Searching for position to store email data
         for (i = 0; i < MAX_EMAILS; i++) {
 
+            //if position of i is a empty email space then we add the email to that position of the db emails
             if (is_email_empty(&db->emails[i])) {
                 db->email_count++;
                 src_email->empty = FALSE;
@@ -176,7 +186,7 @@ Folder* get_database_folder(Database* db, char* target_name) {
         for (i = 0; i < MAX_FOLDERS; i++) {
             folder_name = get_folder_name(&db->folders[i]);
             result = strcmp(folder_name, target_name);
-            if (result == 0)
+            if (result == 0) //if there is a match it returns the reference to the target folder
                 return &db->folders[i];
         }
     }
@@ -207,11 +217,12 @@ int get_database_folders(Database* db, Folder* folders[]) {
 
     if (db != NULL && folders != NULL) {
         //For each folder in db 
-        //filing the parameter folders with the pointers to the fodlers contained into
-        for (i = 0; i < MAX_FOLDERS; i++) {
+        //filing the parameter folders with the pointers to the folders contained into
+        for (i = 0; i < MAX_FOLDERS; i++)
             folders[i] = &db->folders[i];
-            folder_quantity = i;
-        }
+
+        //Getting the folders counts
+        folder_quantity = get_database_folder_count(db);
     }
 
     return folder_quantity;
@@ -231,9 +242,8 @@ Folder* create_database_folder(Database* db, char* folder_name) {
     if (db != NULL, folder_name != NULL) {
         //Setting up folder information
         init_folder(&folder);
-        //        init_folder_emails(&folder, db);
+        //init_folder_emails(&folder, db);
         strcpy(folder.folder_name, folder_name);
-
         //adding to db
         add_folder_to_database(db, &folder);
     }
@@ -257,6 +267,7 @@ int add_folder_to_database(Database* db, Folder* src_folder) {
         //Searching for position to store email data
         for (i = 0; i < MAX_FOLDERS; i++) {
 
+            //if a empty position is found then we the folder at that position 
             if (is_folder_empty(&db->folders[i])) {
                 copy_folder(&db->folders[i], src_folder);
                 db->folder_count++;
@@ -280,7 +291,7 @@ int delete_database_folder(Database* db, Folder* folder) {
 }
 
 /**
- *  Setts db id to a new an unic id 
+ *  Setts db id to a new an unique id 
  * @param db
  */
 void get_new_unic_id(Database* db) {

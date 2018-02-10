@@ -1,12 +1,15 @@
 /* 
- * File:  
- * Author: 
- *
- * Fill Header!!
+ * File:menu.h
+ * Author: Stephen Appiah
+ * DATE: 09/01/2018libraries
+ * This section contains the menu constants values
  */
 
 #ifndef MENU_H
 #define MENU_H
+
+
+// -------------------- Menu Options ----------------------------------
 
 #define MSG_QUIT "%d. Quit\n"
 #define OPTION_QUIT 0

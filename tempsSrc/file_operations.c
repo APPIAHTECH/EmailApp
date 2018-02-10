@@ -1,10 +1,14 @@
 /* 
- * File:  
- * Author: 
+ * File:Database.c   
+ * Author:Stephen Appiah
+ * DATE: 09/01/2018
+ * Version : 1.0
  *
- * Fill Header!!
+ * 
+ * This file describes the file operations methods related to the file operations  header
+ * The general purpose of the file if to serve the different functionality of the file operations.
+ * 
  */
-
 
 #include "imports.h"
 
@@ -37,7 +41,7 @@ int read_config(Database *db) {
 
         if (last_message_id != NOT_FOUNDED) { //if get_message_id found an valid ID
 
-            db->msg_id_seed = last_message_id; //setting msg_id_seed to ID geted
+            db->msg_id_seed = last_message_id; //Setting msg_id_seed to ID geted
             result_get_folder = get_folders(configuraionFile, db); //Getting folders from config file and storing to db
             result_get_message = get_message(configuraionFile, db); //Getting messages from config file and storing to db
 
@@ -151,7 +155,7 @@ int get_folders(FILE *config_file, Database *db) {
     //Variable declarations
     char buff[MAX_BUF]; //Use to store file string line (folder name)
     char folder_name[MAX_BUF]; //use to store folder value
-    int id, matched, i, pos, result;
+    int matched, i, pos;
 
     if (config_file == NULL || db == NULL)
         return FAIL;
@@ -167,11 +171,11 @@ int get_folders(FILE *config_file, Database *db) {
         else {
             str_remove_trash(buff); //return str with a \0 where \r is
 
-            //Getting the pos of :, if it return pos that means the line reading is a type something:
+            //Getting the pos of :, if it return pos that means the line reading is a type (HEADER_NAME:)
             pos = index_of(buff, FORMAT_FIELD_HEADERS);
-
-            if (pos > 0) //if he gets the first occurrence , continue the next iteration to get netx line
+            if (pos > 0) //if he gets the first occurrence with a header_name: format , continue the next iteration to get netx line
                 continue;
+
             matched = sscanf(buff, FORMAT_SPECIAL_BEAM_CANON, folder_name);
             if (matched > 0) { // if a match according to format
 
@@ -226,7 +230,7 @@ int get_message(FILE *config_file, Database *db) {
     //Variable declarations
     char buff[MAX_BUF];
     char email_name[MAX_BUF]; //use to store folder value
-    int id, matched, i = 0, pos = 0, j = 0;
+    int matched, i = 0, pos = 0, j = 0;
     Email email, *temp_email;
 
     if (config_file == NULL || db == NULL)
@@ -245,47 +249,48 @@ int get_message(FILE *config_file, Database *db) {
         {
             i++; //to store next email sectoion
             j = 0; //setting j = 0 coz there is a new email section coming
-            continue;
-        }
+        } else {
+            str_remove_trash(buff); //return str with a \0 where \r is
+            if (strcmp(buff, FILE_END) == 0)
+                break;
 
-        str_remove_trash(buff); //return str with a \0 where \r is
-        if (strcmp(buff, FILE_END) == 0)
-            break;
+            //Getting the pos of :, if it return pos that means the line reading is a type something:
+            pos = index_of(buff, FORMAT_FIELD_HEADERS);
+            if (pos > 0) //if he gets the first occurrence , continue the next iteration to get netx line
+                continue;
+            else {
+                matched = sscanf(buff, FORMAT_SPECIAL_BEAM_CANON, email_name);
+                if (matched > 0) {
 
-        //Getting the pos of :, if it return pos that means the line reading is a type something:
-        pos = index_of(buff, FORMAT_FIELD_HEADERS);
-        if (pos > 0) //if he gets the first occurrence , continue the next iteration to get netx line
-            continue;
-        else {
-            matched = sscanf(buff, FORMAT_SPECIAL_BEAM_CANON, email_name);
-            if (matched > 0) {
+                    //Setting email info
+                    strcpy(email.id, email_name);
 
-                //Setting email info
-                strcpy(email.id, email_name);
-
-                temp_email = search_database_email_id(db, email.id);
-                if (temp_email == NULL) {
-
-                    if (get_messages_info(&email) != FAIL) {
-                        temp_email = add_email_to_database(db, &email); //adding email to the db and returning a refrence to it
-                        if (temp_email != NULL) {
-                            db->folders[i].emails[j] = temp_email; //adding email to folder
-                            temp_email->referenced++;
-                            db->folders[i].empty = FALSE;
-                            j++;
-                        }
-                    } else
-                        return FAIL;
-
-                } else {
-                    //if cant add to db it means the email is already in db , so we get the reference from the db
+                    //Searching if allready there is a message id the db
                     temp_email = search_database_email_id(db, email.id);
-                    db->folders[i].emails[j] = temp_email;
-                    temp_email->referenced++;
-                    db->folders[i].empty = FALSE;
-                    temp_email = NULL;
-                }
+                    if (temp_email == NULL) { //if the current message was not found in db we add it to the db
 
+                        if (get_messages_info(&email) != FAIL) {
+                            temp_email = add_email_to_database(db, &email); //adding email to the db and returning a refrence to it
+                            if (temp_email != NULL) {
+                                db->folders[i].emails[j] = temp_email; //adding email to folder
+                                temp_email->referenced++;
+                                db->folders[i].empty = FALSE;
+                                j++;
+                            } else
+                                return FAIL;
+                        } else
+                            return FAIL;
+
+                    } else {
+                        //if cant add to db it means the email is already in db , so we get the reference from the db
+                        temp_email = search_database_email_id(db, email.id);
+                        db->folders[i].emails[j] = temp_email;
+                        temp_email->referenced++;
+                        db->folders[i].empty = FALSE;
+                        temp_email = NULL;
+                    }
+
+                }
             }
         }
     }

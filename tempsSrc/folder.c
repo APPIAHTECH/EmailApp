@@ -1,8 +1,13 @@
 /* 
- * File:  
- * Author: 
+ * File:Folder.c   
+ * Author:Stephen Appiah
+ * DATE: 09/01/2018
+ * Version : 1.0
  *
- * Fill Header!!
+ * 
+ * This file describes the folder methods related to the folder header
+ * The general purpose of the file if to serve the different functionality of the folder structure.
+ * 
  */
 
 #include "imports.h"
@@ -18,7 +23,7 @@
  */
 void init_folder(Folder* folder) {
 
-    //Variables dec
+    //Variables declarations
     int i;
 
     //Defautl folder structure
@@ -50,7 +55,9 @@ int delete_folder(Folder* folder) {
  */
 int create_folder(Folder* folder, char* name) {
 
-    if (folder != NULL) {
+    //if a folder and a name is specify it creats a new folder instans with default values
+    //and sets the name of the folder to the given one
+    if (folder != NULL && name != NULL) {
         init_folder(folder);
         strcpy(folder->folder_name, name);
         return SUCCESS;
@@ -110,7 +117,8 @@ int add_email_to_folder(Folder* folder, Email* email) {
     int i = 0;
 
     if (folder != NULL && email != NULL) {
-        //Cheking if position where to store email is empty. if is empty we store the new email to that folder email position
+        //Cheking if position where to store email is empty. 
+        //if is empty we store the new email to that folder email position
         for (i = 0; i < MAX_FOLDER_EMAILS; i++) {
             if (folder->emails[i] == NULL) {
                 email->referenced++;
@@ -133,8 +141,15 @@ int delete_folder_email(Folder* folder, Email* email) {
 
 }
 
+/**
+ * 
+ * @param dest_folder
+ * @param src_folder
+ */
 void copy_folder(Folder* dest_folder, Folder* src_folder) {
 
+    //given a src folder and a destination folder , 
+    //it copies the basic folder structure information and store it to the given folder destination
     if (src_folder != NULL && src_folder != NULL) {
         strcpy(dest_folder->folder_name, src_folder->folder_name);
         dest_folder->empty = src_folder->empty;

@@ -1,7 +1,7 @@
 /* 
  * File:  
  * Author: 
- *
+ * DATE: 09/01/2018
  * Fill Header!!
  */
 
@@ -15,7 +15,7 @@
 #include "file_operations.h"
 
 /**
- * 
+ *  reads an option given by the user
  * @param msg
  * @return 
  */
@@ -30,7 +30,7 @@ int read_option(const char* msg) {
 }
 
 /**
- * 
+ * Prints the different options , that can be selected
  * @return 
  */
 int query_option() {
@@ -64,9 +64,10 @@ void list_emails_option(Database* db) {
 
     puts(ALL_EMAIL);
     puts(LINE);
+    //for each email in db printing it
     for (i = 0; i < MAX_EMAILS; i++) {
 
-        if (is_email_empty(&db->emails[i]) != TRUE) { // if positon reading is empty we dont print else that means there is a email we can print
+        if (is_email_empty(&db->emails[i]) != TRUE) { // if positon reading is empty we dont print ,else that means there is a email we can print
             printf(_EMAIL_TO_PRINT, i);
             print_email(&db->emails[i]);
             puts(LINE);
@@ -115,25 +116,26 @@ void create_email_option(Database* db) {
 
     log_info(stdout, "You have selected: Create email option\n");
 
-    init_email(&email); //setting up a default satement to email
+    init_email(&email); //setting up a default statement to email
     get_new_message_id(db, new_id); //generating a new id for the message
-    get_new_unic_id(db); //generaing a unic id for the next email to creat
     strcpy(email.id, new_id); // setting the new id to email
     read_email_interactive(&email); //getting user information to setup email structure
 
-    valid = validate_email(&email);
+    valid = validate_email(&email); //NOTE : NOT IMPLEMENTED YET , it will return true even if is not a valid email
 
     if (valid) {
         folder = get_database_folder(db, PROTECT_OUTBOX); //getting Outbox folder such that we can add the email to this folder
         temp = add_email_to_database(db, &email);
 
         if (folder != NULL) { //if it founds  Outbox folder 
-            if (temp != NULL) {
-                if (add_email_to_folder(folder, temp) != FAIL) {
+            if (temp != NULL) { //if added to db
+                if (add_email_to_folder(folder, temp) != FAIL) { //if added email to folder
                     succes = store_email(temp); //Finaly writing the email to the emailDB
-                    if (succes)
+                    if (succes) {
+                        get_new_unic_id(db); //generaing a unic id for the next email to creat
                         log_info(stdout, MESSAGE_EMAIL_CREATED);
-                    else
+
+                    } else
                         log_error(stdout, ERROR_SAVING_FILE);
                 } else {
                     log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);
@@ -262,7 +264,7 @@ void add_email_to_folder_option(Database* db) {
     puts(MESSAGE_FOLDER_EMAIL_TO_ADD);
     scanf("%s", folder_to_store);
 
-    //Finding the email on the forder
+    //searching the email on the forder
     email = search_database_email_id(db, mail_to_add);
     if (email == NULL) //if can't find email specify
         log_info(stdout, EMAIL_INFO_NOT_IN_DB);
@@ -271,7 +273,7 @@ void add_email_to_folder_option(Database* db) {
         if (folder == NULL)//if can't find folder specify
             log_error(stdout, FOLDER_INFO_NOT_IN_DB);
         else {
-            if (add_email_to_folder(folder, email) == SUCCESS) {
+            if (add_email_to_folder(folder, email) == SUCCESS) { //if added email to folder 
                 log_info(stdout, MESSAGE_EMAIL_ADDED_FOLDER);
             } else {
                 log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);

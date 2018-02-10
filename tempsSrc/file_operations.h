@@ -1,8 +1,11 @@
 /* 
- * File:   
- * Author: 
- *
- * Fill Header!!
+ * File: fileOperations.h   
+ * Author:Stephen Appiah
+ * DATE: 09/01/2018
+ * Version : 1.0
+ * 
+ *  This file contains the main structure of the definition of file operations.
+ * 
  */
 
 #ifndef FILE_OPERATIONS_H
@@ -11,6 +14,8 @@
 #include "common.h"
 #include "database.h"
 
+
+// -------------------- File Operation Header Methods ----------------------------------
 
 int read_config(Database *db);
 

@@ -1,8 +1,13 @@
 /* 
- * File:  
- * Author: 
+ * File:utils.c   
+ * Author:Stephen Appiah
+ * DATE: 09/01/2018
+ * Version : 1.0
  *
- * Fill Header!!
+ * 
+ * This file describes the utilities methods related to the utilities header
+ * The general purpose of the file if to serve basic functions to all section of the program
+ * 
  */
 
 
@@ -12,7 +17,9 @@
 #include "database.h"
 
 void flush_input() {
+    //Variable declarations
     char c;
+
     while ((c = getchar()) != '\n' && c != EOF) {
     }
 }
@@ -62,7 +69,7 @@ void display_error(char *msg) {
 }
 
 /**
- * prints emails fields
+ * prints all emails fields
  * @param email
  */
 void print_email(Email *email) {
@@ -73,30 +80,32 @@ void print_email(Email *email) {
     printf(EMAIL_STRUCTURE_TO, email->to);
     printf(EMAIL_STRUCTURE_SUBJECT, email->subject);
     printf(EMAIL_STRUCTURE_BODY, email->body);
-    /**NOTE RECORDAR COMENTAR!*/
+    /*
     printf("Empty %d \n", email->empty);
-    printf("Referenced %d \n", email->referenced);
+    printf("Referenced %d \n", email->referenced);*/
 }
 
 /**
- * prints folder fields
+ * prints all folder fields
  * @param folder
  */
 void print_folder(Folder *folder) {
 
+    //variable declaration
     int i;
 
     printf(FOLDER_STRUCTURE_NAME, folder->folder_name);
     printf(FOLDER_STRUCTURE_EMPTY, folder->empty);
     printf(FOLDER_STRUCTURE_SIZE, folder->size);
     printf(FOLDER_STRUCTURE_PROTECTED, folder->protected);
-    printf(LINE);
+    puts(LINE);
     printf(FOLDER_STRUCTURE_FOLDER_MAILS_LIST);
 
+    //Printing all emails that the folder contains
     for (i = 0; i < MAX_FOLDER_EMAILS; i++) {
         if (folder->emails[i] != NULL) {
             print_email(folder->emails[i]);
-            printf(LINE);
+            puts(LINE);
         }
     }
 
@@ -104,25 +113,31 @@ void print_folder(Folder *folder) {
 
 /**
  * Prints all db information
+ * Build for checking if db information are correct
  * @param db
  */
 void print_database(Database *db) {
 
+    //variable declaration
     int i = 0;
 
     puts(DATABASE_STRUCTURE);
     puts(LINE);
+
     printf(DATABASE_STRUCTURE_MSG_ID, db->msg_id_seed);
     printf(DATABASE_STRUCTURE_EMAIL_COUNT, db->email_count);
     printf(DATABASE_STRUCTURE_FOLDER_COUNT, db->folder_count);
+
     puts(LINE);
     puts(DATABASE_STRUCTURE_EMAIL_LIST);
 
+    //for each email in db printing it 
     for (i = 0; i < MAX_EMAILS; i++)
         print_email(&db->emails[i]);
 
     puts(LINE);
     puts(DATABASE_STRUCTURE_FOLDER_LIST);
+    //for each folder in db printing folder and folder emails
     for (i = 0; i < MAX_FOLDERS; i++) {
         printf(_FOLDER_TO_PRINT, &db->folders[i].folder_name, i);
         print_folder(&db->folders[i]);
@@ -131,7 +146,7 @@ void print_database(Database *db) {
 }
 
 /**
- * 
+ * This functions gets the currect date and tikmem an it returns a string of the result
  * @return 
  */
 char *get_curent_date() {
@@ -141,7 +156,8 @@ char *get_curent_date() {
 }
 
 /**
- * 
+ * This function sets , where a \r is, to a \0.
+ *Used to determinats end of str line
  * @param buff
  */
 void str_remove_trash(char *buff) {
@@ -158,14 +174,16 @@ void str_remove_trash(char *buff) {
  * @return 
  */
 int index_of(char * str, char * searched) {
+
+    //Variable declarations
     int position = -1;
     char * result = NULL;
 
+    //checking if str and searched are defined
     if (str && searched) {
-        result = strstr(str, searched);
-        if (result) {
-            position = result - str;
-        }
+        result = strstr(str, searched); //finds the first occurrence of the substring
+        if (result) // if there was any occurrence
+            position = result - str; //getting the pos of the occurrence on the substring
     }
 
     return position;
@@ -180,7 +198,10 @@ int index_of(char * str, char * searched) {
  */
 void str_sub_string(char *dest, char *src, int from, int to) {
 
+    //Variable declarations
     int i = 0, j = 0;
+
+    //Copies the src string from a specific to a specific value, if character reading is not a \n or \r
     for (i = from; i < to; i++) {
         if (src[i] != '\n' || src[i] != '\r') {
             dest[j] = src[i];
@@ -196,8 +217,10 @@ void str_sub_string(char *dest, char *src, int from, int to) {
  */
 void get_email_store_path(char *dest, char *email) {
 
+    //Variable declarations
     char path[MAX_PATH];
 
+    //Concatenating the str
     strcpy(path, EM_STORE_PATH);
     strcat(path, email);
     strcat(path, FILE_FORMAT);
@@ -230,7 +253,7 @@ void str_trim(char *dest, char *str) {
 }
 
 /**
- * 
+ * This function sets , where a \n is, to a \0.
  * @param str
  */
 void str_remove_new_line(char *str) {

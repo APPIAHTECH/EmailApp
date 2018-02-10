@@ -1,8 +1,8 @@
 /* 
- * File:  
- * Author: 
- *
- * Fill Header!!
+ * File:utils.h
+ * Author: Stephen Appiah
+ * DATE: 09/01/2018
+ * This file contains all utilities stuff
  */
 
 #ifndef UTILS_H
@@ -17,6 +17,7 @@
 
 #define LOG_LEVEL 2
 
+// -------------------- Utilies Header Methods ----------------------------------
 void flush_input();
 
 void log_warn(FILE* fd, char* msg);
@@ -30,10 +31,11 @@ void str_remove_trash(char *buff);
 int index_of(char * str, char * searched);
 void print_folder(Folder *folder);
 void print_database(Database *db);
-void str_sub_string(char *dest , char *src , int from , int to);
-void get_email_store_path(char *dest , char *email);
-void str_trim(char *dest , char *str);
+void str_sub_string(char *dest, char *src, int from, int to);
+void get_email_store_path(char *dest, char *email);
+void str_trim(char *dest, char *str);
 void str_remove_new_line(char *str);
-int sub_email(Email *email , char *caracter);
+int sub_email(Email *email, char *caracter);
+
 #endif /* UTILS_H */
 

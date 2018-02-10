@@ -15,7 +15,7 @@
  * Altres comentaris o incidències:
  */
 
-/**NOTE : EL PROJECTO ESTA 90%*/
+/**NOTE : EL PROJECTO ESTA 95%*/
 
 #include "imports.h"
 #include "file_operations.h"

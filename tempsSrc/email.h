@@ -1,8 +1,11 @@
 /* 
- * File:  
- * Author: 
- *
- * Fill Header!!
+ * File:email.h   
+ * Author:Stephen Appiah
+ * DATE: 09/01/2018
+ * Version : 1.0
+ * 
+ *  This file contains the main structure of the definition of email.
+ * 
  */
 
 #ifndef EMAIL_H
@@ -11,21 +14,27 @@
 
 #include "common.h"
 
-#define MAX_EMAIL_ID 50
-#define MAX_SUBJECT 100
-#define MAX_BODY    150
-#define DEFAULT_MAX_FIELD 50
+#define MAX_EMAIL_ID 50 //max length of characters for the id field
+#define MAX_SUBJECT 100 //max length of characters for the subject field
+#define MAX_BODY    150 //max length of characters for the body field
+#define DEFAULT_MAX_FIELD 50 //max length of characters for date field
+
+// -------------------- Email Structure ----------------------------------
 
 typedef struct {
-    char id[MAX_EMAIL_ID];
-    char subject[MAX_SUBJECT];
-    char from[DEFAULT_MAX_FIELD];
-    char to[DEFAULT_MAX_FIELD];
-    char date[DEFAULT_MAX_FIELD];
-    char body[MAX_BODY];
-    int empty;
-    int referenced;
+    char id[MAX_EMAIL_ID]; //stores a generated unique id such taht id is [ID NUMBER]_EDA_email
+    char subject[MAX_SUBJECT]; //stores the subject for the message
+    char from[DEFAULT_MAX_FIELD]; //saves the from 
+    char to[DEFAULT_MAX_FIELD]; //saves the to 
+    char date[DEFAULT_MAX_FIELD]; //saves the current date and time  
+    char body[MAX_BODY]; ////saves the body of the message 
+    int empty; // this field is empty when the Email structure is defined with the default values  , 
+    //determinants whether the message contains valid information or not
+    int referenced; //determinants how many folders the email is being referenced
 } Email;
+
+
+// -------------------- Email Header Methods ----------------------------------
 
 void init_email(Email* email);
 
