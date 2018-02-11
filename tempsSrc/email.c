@@ -1,7 +1,7 @@
 /* 
  * File:email.c   
- * Author:Stephen Appiah
- * DATE: 09/01/2018
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * Version : 1.0
  *
  * 
@@ -31,7 +31,7 @@ void init_email(Email* email) {
     strcpy(email->subject, EMAIL_INIT_SUBJECT);
     strcpy(email->body, EMAIL_INIT_BODY);
 
-    email->empty = TRUE; // setting the field to empty , cos it represent that we have a default structure
+    email->empty = TRUE; // setting the field to empty , cos the field represent , that we have a default structure
     //so this email is empty
     email->referenced = UNDEFINED;
 }
@@ -65,8 +65,7 @@ char* get_email_id(Email* email) {
     return email->id;
 }
 
-/** emailDB/3_EDA_email.txt
-
+/** 
  * Returns the subject of the email.
  * @param email
  * @return 
@@ -172,9 +171,10 @@ int load_email_from_file(FILE* fd, Email *email) {
 
             if (pos > 0) { //if it could find a (:) that means there was a header format
 
-                str_remove_new_line(buff); //for getting the line without the first 2 white spaces 
-                str_trim(temp, buff); // removing the left and right spaces of the line
-
+                str_remove_new_line(buff); //for getting the line without the new line \n
+                str_sub_string(temp, buff, pos+1, MAX_BUF); // NOTE +1 is important beacause it lets the function to statrt to read afther :
+                str_trim(temp, temp); // removing the left and right spaces of the line
+                
                 //Setting up email information acording to each field
                 if (strcmp(header, EMAIL_FILE_STRUC_DATE) == 0)
                     strcpy(email->date, temp);

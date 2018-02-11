@@ -1,6 +1,11 @@
-Exception: STATUS_ACCESS_VIOLATION at eip=006D6F63
-eax=00000000 ebx=0063CC1C ecx=0063C2DC edx=00000000 esi=2007170F edi=200716FF
-ebp=2E6C6961 esp=0063CC00 program=C:\Users\Salchipapa\Documents\NetBeansProjects\EmailManeger\dist\Debug\Cygwin-Windows\emailmaneger.exe, pid 9980, thread main
+Exception: STATUS_ACCESS_VIOLATION at eip=61159D0A
+eax=00000001 ebx=0063CC1C ecx=00000001 edx=004060E0 esi=20071D7F edi=0063C2CB
+ebp=0063C2A8 esp=0063C278 program=C:\Users\Salchipapa\Documents\NetBeansProjects\EmailManeger\dist\Debug\Cygwin-Windows\emailmaneger.exe, pid 10212, thread main
 cs=001B ds=0023 es=0023 fs=003B gs=0000 ss=0023
 Stack trace:
 Frame     Function  Args
+0063C2A8  61159D0A (0063C360, 0063C328, 20039768, 0063C2C4)
+0063C348  004023C1 (0063C360, 00000000, 0063C3D8, 00000000)
+0063CBF8  00403092 (00000001, 0063CC1C, 200280F0, 61007A02)
+0063CD18  61007A67 (00000000, 0063CD74, 61006A60, 00000000)
+End of stack trace

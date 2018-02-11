@@ -1,7 +1,7 @@
 /* 
  * File:utils.c   
- * Author:Stephen Appiah
- * DATE: 09/01/2018
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * Version : 1.0
  *
  * 
@@ -25,7 +25,7 @@ void flush_input() {
 }
 
 /**
- * 
+ * Allow to print info msg
  * @param fd
  * @param msg
  */
@@ -37,7 +37,7 @@ void log_info(FILE* fd, char* msg) {
 }
 
 /**
- * 
+ * Allow to print warning msg
  * @param fd
  * @param msg
  */
@@ -49,7 +49,7 @@ void log_warn(FILE* fd, char* msg) {
 }
 
 /**
- * 
+ * Allow to print error msg
  * @param fd
  * @param msg
  */
@@ -61,7 +61,7 @@ void log_error(FILE* fd, char* msg) {
 }
 
 /**
- * 
+ * Allow to print error msg
  * @param msg
  */
 void display_error(char *msg) {
@@ -146,7 +146,7 @@ void print_database(Database *db) {
 }
 
 /**
- * This functions gets the currect date and tikmem an it returns a string of the result
+ * This functions gets the current date and time and it returns a string of the result
  * @return 
  */
 char *get_curent_date() {
@@ -168,7 +168,7 @@ void str_remove_trash(char *buff) {
 }
 
 /**
- * returns the postion of the first occurrence with the second str
+ * returns the position of the first occurrence with the second str
  * @param str
  * @param searched
  * @return 
@@ -211,7 +211,7 @@ void str_sub_string(char *dest, char *src, int from, int to) {
 }
 
 /**
- * returns emailDB/name of email if . txt
+ * returns emailDB/name of email .txt
  * @param dest
  * @param email
  */
@@ -264,7 +264,7 @@ void str_remove_new_line(char *str) {
 }
 
 /**
- * return true if a email contains caracter else fale
+ * return true if a email contains character else false
  * @param email
  * @param caracter
  * @return 
@@ -292,4 +292,26 @@ int sub_email(Email *email, char *caracter) {
 
     return FALSE;
 
+}
+
+/**
+ * Ask user question
+ * return TRUE if user accepts else false
+ * @param msg
+ * @return 
+ */
+int confirmation_box(char *msg) {
+    //Variable declaration
+    char option[MAX_BUF];
+
+    //user input
+    do {
+        puts(msg);
+        scanf(STRING, option);
+    }while(strcmp(option , _DELETE_EMAIL_MSG_YES) != 0 && strcmp(option , _DELETE_EMAIL_MSG_NO) != 0); //while the user dont type Yes or No the wile will contienue asking user
+    
+    if(strcmp(option , _DELETE_EMAIL_MSG_YES) == 0)
+        return TRUE;
+    else 
+        FALSE;
 }

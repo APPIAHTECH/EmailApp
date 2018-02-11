@@ -1,7 +1,7 @@
 /* 
  * File:Database.c   
- * Author:Stephen Appiah
- * DATE: 09/01/2018
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * Version : 1.0
  *
  * 
@@ -16,7 +16,7 @@
 #include "database.h"
 #include "utils.h"
 #include "folder.h"
-
+#include "file_operations.h"
 /**
  * Initializes an email database.
  * @param db
@@ -99,7 +99,7 @@ Email* search_database_email_id(Database* db, char* target_id) {
 }
 
 /**
- * Produces a new unique message id and writes it to buf parameter.
+ * creates a new unique message id and writes it to buf parameter.
  * @param db
  * @param buf
  */
@@ -114,7 +114,7 @@ void get_new_message_id(Database* db, char buf[]) {
         last_id_gen = db->msg_id_seed;
         last_id_gen++;
 
-        sprintf(str_num, "%d", last_id_gen); //cast int value to string
+        sprintf(str_num, NUMBER, last_id_gen); //cast int value to string
         strcpy(temp, str_num); // concatenating id 
         strcat(temp, EMAIL_INIT_ID); // concatenating _EDA_email
         strcpy(buf, temp); //storing result to buff
@@ -153,17 +153,25 @@ Email* add_email_to_database(Database* db, Email* src_email) {
     return NULL;
 }
 
+/**
+ * this function deletes the email from the database
+ * also delets the email  file
+ * @param db
+ * @param email
+ * @return 
+ */
 int delete_database_email(Database* db, Email* email) {
 
-    //TODO!!!
-    //Variable declarations
-    int i;
+    if (db == NULL && email == NULL) return FAIL;
 
-    //Searching for position to be delete email data
-    for (i = 0; i < MAX_EMAILS; i++) {
-
-
-    }
+    if (delete_email_file(email) == SUCCESS) { //if the function deletes the email file
+        //We set the email to a null state 
+        //this  means that the position where that email was is now avilable for a new email
+        init_email(email);
+        //Decrementing the email_count cos we delete one email
+        db->email_count--;
+    } else
+        return FAIL;
 
     return SUCCESS;
 }
@@ -221,6 +229,7 @@ int get_database_folders(Database* db, Folder* folders[]) {
         for (i = 0; i < MAX_FOLDERS; i++)
             folders[i] = &db->folders[i];
 
+
         //Getting the folders counts
         folder_quantity = get_database_folder_count(db);
     }
@@ -253,7 +262,7 @@ Folder* create_database_folder(Database* db, char* folder_name) {
 }
 
 /**
- * 
+ * Adds the given folder to the database and returns success if added else fail 
  * @param db
  * @param src_folder
  * @return 
@@ -268,9 +277,10 @@ int add_folder_to_database(Database* db, Folder* src_folder) {
         for (i = 0; i < MAX_FOLDERS; i++) {
 
             //if a empty position is found then we the folder at that position 
-            if (is_folder_empty(&db->folders[i])) {
+            if (is_folder_empty(&db->folders[i]) == TRUE) {
                 copy_folder(&db->folders[i], src_folder);
                 db->folder_count++;
+                db->folders[i].empty = FALSE;
                 return SUCCESS;
             }
         }
@@ -288,10 +298,16 @@ int add_folder_to_database(Database* db, Folder* src_folder) {
  */
 int delete_database_folder(Database* db, Folder* folder) {
 
+    if (db == NULL && folder == NULL) return FAIL;
+
+    //We set the folder to a null state 
+    //this  means that the position where that folder was is now avilable for a new folder
+    init_folder(folder);
+    return SUCCESS;
 }
 
 /**
- *  Setts db id to a new an unique id 
+ *  Sets db id to a new an unique id 
  * @param db
  */
 void get_new_unic_id(Database* db) {

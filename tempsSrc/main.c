@@ -1,21 +1,17 @@
 /* 
  * Grup de Seminari: S401
  * Professor seminari: Roberto Juan Carlini
- * Nom Fitxer: FP-S401-Sy-Ez-NIA-Cognom-Nom.c
  * Incidències:
  * 
- * Autor (Nom i NIA):
- * Data/hora:
- * Collaboradors (si cal):
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * 
  * Número problema:
  * Enunciat Problema:
- * Ús del programa:
- * Estat de l'entrega:
+ * Ús del programa: 
+ * Estat de l'entrega: Compila y funciona
  * Altres comentaris o incidències:
  */
-
-/**NOTE : EL PROJECTO ESTA 95%*/
 
 #include "imports.h"
 #include "file_operations.h"

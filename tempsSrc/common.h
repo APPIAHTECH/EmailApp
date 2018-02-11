@@ -1,7 +1,7 @@
 /* 
  * File:common.h
- * Author: Stephen Appiah
- * DATE: 09/01/2018
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * This section contains the main constant values of Email App
  */
 
@@ -138,17 +138,44 @@
 #define MESSAGE_EMAIL_ENTER_NAME "Enter the name of the email you wants:\n"
 #define MESSAGE_EMAIL_CREATED "Mail has been created and saved at Outbox Folder!"
 #define MESSAGE_FOLDER_CREATED "Folder created"
-#define EMAIL_INFO_NOT_IN_DB "Can't find the email you are searching"
-#define FOLDER_INFO_NOT_IN_DB "Can't find the folder you are searching"
+#define EMAIL_INFO_NOT_IN_DB "Can't find the email"
+#define FOLDER_INFO_NOT_IN_DB "Can't find the folder"
 #define FOLDER_INFO_ALREADY_IN "This folder already exist"
 #define EMAIL_INFO_ALREADY_IN "This email already exist"
 #define MESSAGE_EMAIL_ADDED_FOLDER "You have successfully added the email to the folder"
 #define MESSAGE_EMAIL_TO_ADD_FOLDER "Enter the name of the email you wants add to the folder:\n"
 #define MESSAGE_FOLDER_EMAIL_TO_ADD "Enter the name of the folder you wants the email to be add:\n"
 
+#define MESSAGE_EMAIL_TO_REMOVE_FOLDER "Enter the name of the email you wants to remove from the folder:\n"
+#define MESSAGE_FOLDER_EMAIL_TO_REMOVE "Enter the name of the folder you wants the email sould be removed:\n"
+#define MESSAGE_FOLDER_PROTECTED "The folder [%s] is protected , cant delete the folder "
+
+#define _DELETE_EMAIL_MSG "Enter name of email you want to delete\n"
+#define _DELETE_FOLDER_MSG "Enter name of folder you want to delete\n"
+#define _DELETE_CONFIRMATION_MSG "Are you sure you want to delete the mail ? [Yes | No]"
+#define _DELETE_FOLDER_CONFIRMATION_MSG "Are you sure you want to delete the Folder ? [Yes | No]"
+#define _DELETE_EMAIL_MSG_YES "Yes"
+#define _DELETE_EMAIL_MSG_NO "No"
 #define _SEARCH_MSG "Enter a character\n"
 #define _SEARCH_MSG_RESULT "[%s]\n"
 #define _SEARCH_MSG_NO_RESULT "No results found ..."
+#define _DELETE_EMAIL_MSG_DONE "The email has been deleted"
+#define _DELETE_FOLDER_MSG_DONE "The folder has been deleted"
+#define _REMOVE_EMAIL_FROM_FOLDER_MSG_DONE "The email has been removed from folder"
+
+#define OPTION_MSG_CHOSE "Choose an option: "
+#define OPTION_MSG_SELECTED_EMAIL_LIST "You have selected: List emails option\n"
+#define OPTION_MSG_SELECTED_SHOW_EMAIL "You have selected: Show email option\n"
+#define OPTION_MSG_SELECTED_CREATE_EMAIL "You have selected: Create email option\n"
+#define OPTION_MSG_SELECTED_DELETE_EMAIL "You have selected: Delete email option\n"
+#define OPTION_MSG_SELECTED_SHOW_FOLDER "You have selected: Show folder option\n"
+#define OPTION_MSG_SELECTED_CREATE_FOLDER "You have selected: Create folder option\n"
+#define OPTION_MSG_SELECTED_DELETE_FOLDER "You have selected: Delete folder option\n"
+#define OPTION_MSG_SELECTED_ADD_EMAIL_TO_FOLDER "You have selected: Add email to folder option\n"
+#define OPTION_MSG_SELECTED_REMOVE_EMAIL_FOM_FOLDER "You have selected: Remove email from folder option\n"
+#define OPTION_MSG_SELECTED_SEARCH_STRING "You have selected: Search string option\n"
+#define OPTION_MSG_SELECTED_IVALID_OPTION "Invalid option. Try again...\n\n"
+#define OPTION_MSG_SELECTED_PRESS_ENTER_CONTINUE "Press enter to continue..."
 
 // -------------------- Notifications ERRORS----------------------------------
 /**Notifies the error to the users*/
@@ -163,7 +190,7 @@
 #define ERROR_SAVING_FILE "Something  went wrong while saving email file"
 #define ERROR_SAVING_CONIFG_FILE "Can't save config file :o"
 #define ERROR_CAN_FIND_OUTBOX "Something went wrong , can't find OutBox folder :("
-
+#define ERROR_DELETE_EMAIL_MSG "Unable to delete the file"
 
 
 // -------------------- Notifications WARNING----------------------------------
@@ -184,5 +211,7 @@
 #define _FOLDER_TO_PRINT "Folder [%s] : %d \n"
 #define _EMAIL_TOTAL_PRINT "Total Emails :%d \n"
 #define LINE "------------------------------\n"
-
+#define _EMAIL_TOTAL_PRINT "Total Emails :%d \n"
+#define STRING "%s"
+#define NUMBER "%d"
 #endif /* COMMON_H */

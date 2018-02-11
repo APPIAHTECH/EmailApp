@@ -1,8 +1,8 @@
 /* 
  * File:  
- * Author: 
- * DATE: 09/01/2018
- * Fill Header!!
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
+ * This section contains the menu
  */
 
 #include "imports.h"
@@ -21,8 +21,8 @@
  */
 int read_option(const char* msg) {
     int option = OPTION_INVALID;
-    printf("%s", msg);
-    scanf("%d", &option);
+    printf(STRING, msg);
+    scanf(NUMBER, &option);
 
     flush_input();
 
@@ -34,7 +34,7 @@ int read_option(const char* msg) {
  * @return 
  */
 int query_option() {
-    printf("\n");
+    printf(NEW_LINE);
     printf(MSG_LIST_EMAILS, OPTION_LIST_EMAILS);
     printf(MSG_SHOW_EMAIL, OPTION_SHOW_EMAIL);
     printf(MSG_CREATE_EMAIL, OPTION_CREATE_EMAIL);
@@ -46,9 +46,9 @@ int query_option() {
     printf(MSG_REMOVE_EMAIL, OPTION_REMOVE_EMAIL);
     printf(MSG_SEARCH, OPTION_SEARCH);
     printf(MSG_QUIT, OPTION_QUIT);
-    printf("\n");
+    printf(NEW_LINE);
 
-    return read_option("Choose an option: ");
+    return read_option(OPTION_MSG_CHOSE);
 }
 
 /**
@@ -60,7 +60,7 @@ void list_emails_option(Database* db) {
     //Variables declarations
     int i = 0;
 
-    log_info(stdout, "You have selected: List emails option\n");
+    log_info(stdout, OPTION_MSG_SELECTED_EMAIL_LIST);
 
     puts(ALL_EMAIL);
     puts(LINE);
@@ -76,7 +76,7 @@ void list_emails_option(Database* db) {
 }
 
 /**
- * 
+ *  this function allows to prints a specific message
  * @param db
  */
 void show_email_option(Database* db) {
@@ -85,11 +85,11 @@ void show_email_option(Database* db) {
     char mail_to_show[MAX_EMAIL_ID];
     Email *email;
 
-    log_info(stdout, "You have selected: Show email option\n");
+    log_info(stdout, OPTION_MSG_SELECTED_SHOW_EMAIL);
 
     //User input value
     puts(MESSAGE_EMAIL_ENTER_NAME);
-    scanf("%s", mail_to_show);
+    scanf(STRING, mail_to_show);
 
     //Searching for user email in db
     email = search_database_email_id(db, mail_to_show);
@@ -104,7 +104,7 @@ void show_email_option(Database* db) {
 }
 
 /**
- * 
+ * this function allows to create a new message
  * @param db
  */
 void create_email_option(Database* db) {
@@ -114,7 +114,7 @@ void create_email_option(Database* db) {
     Folder *folder = NULL;
     char new_id[MAX_BUF], valid, succes;
 
-    log_info(stdout, "You have selected: Create email option\n");
+    log_info(stdout, OPTION_MSG_SELECTED_CREATE_EMAIL);
 
     init_email(&email); //setting up a default statement to email
     get_new_message_id(db, new_id); //generating a new id for the message
@@ -157,22 +157,42 @@ void create_email_option(Database* db) {
 }
 
 /**
- * 
+ * this function allows to delete email
  * @param db
  */
 void delete_email_option(Database* db) {
-    log_info(stdout, "You have selected: Delete email option\n");
+    //Variables declarations
+    char email_name[MAX_BUF];
+    Email *email;
+    log_info(stdout, OPTION_MSG_SELECTED_DELETE_EMAIL);
+
+    //Getting email name from the user
+    printf(_DELETE_EMAIL_MSG);
+    scanf(STRING, email_name);
+
+    //searching if the email exist
+    email = search_database_email_id(db, email_name);
+    if (email != NULL) {
+        if (confirmation_box(_DELETE_CONFIRMATION_MSG) == TRUE) { //asiking if user want to delete email
+            if (delete_database_email(db, email) == SUCCESS) //deleting the email from db and file
+                log_info(stdout, _DELETE_EMAIL_MSG_DONE); //printing result to
+            else
+                log_error(stdout, ERROR_DELETE_EMAIL_MSG);
+        }
+
+    } else
+        log_info(stdout, EMAIL_INFO_NOT_IN_DB);
 }
 
 /**
- * 
+ * this function allows to show a folder
  * @param db
  */
 void show_folder_option(Database* db) {
     //Variables declarations
     int i, j, total_email, total_folder;
 
-    log_info(stdout, "You have selected: Show folder option\n");
+    log_info(stdout, OPTION_MSG_SELECTED_SHOW_FOLDER);
 
     //Print sections
     puts(ALL_FOLDER);
@@ -191,8 +211,10 @@ void show_folder_option(Database* db) {
 
             for (j = 0; j < MAX_FOLDER_EMAILS; j++) {
                 if (db->folders[i].emails[j] != NULL) { //if email is empty we dont print it
-                    print_email(db->folders[i].emails[j]);
-                    printf(LINE);
+                    if (is_email_empty(db->folders[i].emails[j]) != TRUE) { // if the email readed is a empty email we don't print it
+                        print_email(db->folders[i].emails[j]);
+                        printf(LINE);
+                    }
                 }
 
             }
@@ -202,7 +224,7 @@ void show_folder_option(Database* db) {
 }
 
 /**
- * 
+ * this function allows to create a folder
  * @param db
  */
 void create_folder_option(Database* db) {
@@ -211,7 +233,7 @@ void create_folder_option(Database* db) {
     Folder folder, *tmep = NULL;
     int result;
 
-    log_info(stdout, "You have selected: Create folder option\n");
+    log_info(stdout, OPTION_MSG_SELECTED_CREATE_FOLDER);
 
     init_folder(&folder);
     read_folder_interactive(&folder); //getting user input for folder setting
@@ -230,22 +252,46 @@ void create_folder_option(Database* db) {
         } else {
             log_info(stdout, MESSAGE_FOLDER_CREATED);
         }
-
-
     }
 
 }
 
 /**
- * 
+ * this function allows to delete a folder
  * @param db
  */
 void delete_folder_option(Database* db) {
-    log_info(stdout, "You have selected: Delete folder option\n");
+
+    //Variables declarations
+    char folder_name[MAX_BUF];
+    Folder *folder;
+
+    log_info(stdout, OPTION_MSG_SELECTED_DELETE_FOLDER);
+
+    //User input value
+    puts(_DELETE_FOLDER_MSG);
+    scanf(STRING, folder_name);
+
+    if (strcmp(folder_name, PROTECT_INBOX) == 0 || strcmp(folder_name, PROTECT_OUTBOX) == 0) //if the user want delete the protected folders
+        printf(MESSAGE_FOLDER_PROTECTED, folder_name);
+    else {
+        //searching for folder that user specify,
+        folder = get_database_folder(db, folder_name);
+
+        if (folder == NULL) //if dosent exist notify user
+            log_info(stdout, FOLDER_INFO_NOT_IN_DB);
+        else {
+            if (confirmation_box(_DELETE_FOLDER_CONFIRMATION_MSG) == TRUE) { //if the user want confirm to delete the folder
+                if (delete_database_folder(db, folder) == SUCCESS) //if the folder is deleted we notify user
+                    log_info(stdout, _DELETE_FOLDER_MSG_DONE);
+            }
+        }
+    }
+
 }
 
 /**
- * 
+ * this function allows to add a email to a folder
  * @param db
  */
 void add_email_to_folder_option(Database* db) {
@@ -255,14 +301,14 @@ void add_email_to_folder_option(Database* db) {
     Email *email;
     Folder *folder;
 
-    log_info(stdout, "You have selected: Add email to folder option\n");
+    log_info(stdout, OPTION_MSG_SELECTED_ADD_EMAIL_TO_FOLDER);
 
     //User input value
     puts(MESSAGE_EMAIL_TO_ADD_FOLDER);
-    scanf("%s", mail_to_add);
+    scanf(STRING, mail_to_add);
 
     puts(MESSAGE_FOLDER_EMAIL_TO_ADD);
-    scanf("%s", folder_to_store);
+    scanf(STRING, folder_to_store);
 
     //searching the email on the forder
     email = search_database_email_id(db, mail_to_add);
@@ -289,15 +335,57 @@ void add_email_to_folder_option(Database* db) {
 }
 
 /**
- * 
+ * this function allows to remove a email from a folder
  * @param db
  */
 void remove_email_from_folder_option(Database *db) {
-    log_info(stdout, "You have selected: Remove email from folder option\n");
+
+    //Variables declarations
+    char mail_to_remove[MAX_BUF], folder_to_remove[MAX_BUF];
+    Email *email;
+    Folder *folder;
+
+    log_info(stdout, OPTION_MSG_SELECTED_REMOVE_EMAIL_FOM_FOLDER);
+
+    //User input value
+    puts(MESSAGE_EMAIL_TO_REMOVE_FOLDER);
+    scanf(STRING, mail_to_remove);
+
+    puts(MESSAGE_FOLDER_EMAIL_TO_REMOVE);
+    scanf(STRING, folder_to_remove);
+
+    //searching the email on the forder
+    email = search_database_email_id(db, mail_to_remove);
+    if (email == NULL) //if can't find email specify
+        log_info(stdout, EMAIL_INFO_NOT_IN_DB);
+    else {
+        folder = get_database_folder(db, folder_to_remove);
+        if (folder == NULL)//if can't find folder specify
+            log_error(stdout, FOLDER_INFO_NOT_IN_DB);
+        else {
+            if (delete_folder_email(folder, email) == SUCCESS) { //if removed email to folder 
+
+                log_info(stdout, _REMOVE_EMAIL_FROM_FOLDER_MSG_DONE);
+                //checking if the email referenced to more than one folder if not we delete the email
+                if (email->referenced <= 0) {
+                    if (delete_database_email(db, email) == SUCCESS) //deleting the email from db and file
+                        log_info(stdout, _DELETE_EMAIL_MSG_DONE); //printing result to
+                    else
+                        log_error(stdout, ERROR_DELETE_EMAIL_MSG);
+                }
+
+            } else {
+                log_error(stdout, ERROR_EMAIL_CANT_ADD_FOLDER);
+                log_warn(stdout, ERROR_EMAIL_CANT_ADD_FOLDER_FIX);
+            }
+        }
+
+    }
+
 }
 
 /**
- * 
+ * this function allows to search for a match
  * @param db
  */
 void search_string_option(Database* db) {
@@ -305,11 +393,11 @@ void search_string_option(Database* db) {
     int i = 0, founded = 0;
     char caracter[MAX_BUF];
 
-    log_info(stdout, "You have selected: Search string option\n");
+    log_info(stdout, OPTION_MSG_SELECTED_SEARCH_STRING);
 
     //Getting caracter info
     printf(_SEARCH_MSG);
-    scanf("%s", caracter);
+    scanf(STRING, caracter);
 
     puts(ALL_MATCHED_EMAIL);
     //For non empty email , searching for character
@@ -326,7 +414,7 @@ void search_string_option(Database* db) {
 }
 
 /**
- * 
+ * this function shows the different options
  * @param db
  */
 void menu(Database* db) {
@@ -376,11 +464,11 @@ void menu(Database* db) {
                 break;
 
             default:
-                printf("Invalid option. Try again...\n\n");
+                printf(OPTION_MSG_SELECTED_IVALID_OPTION);
                 break;
         }
 
-        printf("Press enter to continue...");
+        printf(OPTION_MSG_SELECTED_PRESS_ENTER_CONTINUE);
         flush_input();
 
         option = query_option();

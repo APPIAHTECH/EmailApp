@@ -1,7 +1,7 @@
 /* 
  * File:Folder.c   
- * Author:Stephen Appiah
- * DATE: 09/01/2018
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * Version : 1.0
  *
  * 
@@ -55,7 +55,7 @@ int delete_folder(Folder* folder) {
  */
 int create_folder(Folder* folder, char* name) {
 
-    //if a folder and a name is specify it creats a new folder instans with default values
+    //if a folder and a name is specify it creates a new folder instance with default values
     //and sets the name of the folder to the given one
     if (folder != NULL && name != NULL) {
         init_folder(folder);
@@ -84,7 +84,7 @@ int get_folder_size(Folder* folder) {
 }
 
 /**
- * Returns 0 if folder is empty, 1 otherwise.
+ * Returns 1 if folder is empty, 0 otherwise.
  * @param folder
  * @return 
  */
@@ -106,7 +106,7 @@ int get_folder_emails(Folder* folder, Email** emails) {
 
 /**
  * Adds the email to the folder email list.
- * returns succes if added else fail
+ * returns success if added else fail
  * @param folder
  * @param email
  * @return 
@@ -123,6 +123,7 @@ int add_email_to_folder(Folder* folder, Email* email) {
             if (folder->emails[i] == NULL) {
                 email->referenced++;
                 folder->emails[i] = email;
+                folder->size++;
                 return SUCCESS;
             }
         }
@@ -131,18 +132,33 @@ int add_email_to_folder(Folder* folder, Email* email) {
 }
 
 /**
- * Removes all ocurrences of the referenced email from the folder.
+ * Removes all occurrences of the referenced email from the folder.
  * @param folder
  * @param email
  * @return 
  */
 int delete_folder_email(Folder* folder, Email* email) {
 
+    //Variable declarations
+    int i = 0;
 
+    if (folder != NULL && email != NULL) {
+        //Cheking if position where to store email is empty. 
+        //if is empty we store the new email to that folder email position
+        for (i = 0; i < MAX_FOLDER_EMAILS; i++) {
+            if (strcmp(folder->emails[i]->id, get_email_id(email)) == 0) {
+                email->referenced--;
+                folder->emails[i] = NULL;
+                folder->size--;
+                return SUCCESS;
+            }
+        }
+    }
+    return FAIL;
 }
 
 /**
- * 
+ * Copies the a folder to another folder
  * @param dest_folder
  * @param src_folder
  */

@@ -1,7 +1,7 @@
 /* 
  * File:Database.c   
- * Author:Stephen Appiah
- * DATE: 09/01/2018
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * Version : 1.0
  *
  * 
@@ -65,7 +65,6 @@ int write_config(Database *db) {
     //Variables declarations
     FILE *config_file = NULL;
     Folder * folder[MAX_FOLDERS];
-    Email email;
     int result;
     char format[MAX_BUF];
 
@@ -86,6 +85,7 @@ int write_config(Database *db) {
         //Section Folders:
         strcpy(format, FILE_FORMAT_CONFIG_STRUC_FOLDERS);
         result = fputs(format, config_file);
+        //getting all folder from the db 
         get_database_folders(db, folder);
         result = set_config_section_Folder(db, folder, config_file, format);
         strcpy(format, NEW_LINE);
@@ -120,7 +120,6 @@ int store_email(Email* email) {
     //Variables declarations
     FILE *email_file = NULL;
     char path[MAX_PATH];
-    char id;
     int result = 0;
 
     if (email == NULL)
@@ -143,6 +142,28 @@ int store_email(Email* email) {
     }
     fclose(email_file); //end up email_file proces
     return SUCCESS;
+}
+
+/**
+ * Given a email, the function deletes the email file
+ * return 1 if success else 0
+ * @param email
+ * @return 
+ */
+int delete_email_file(Email *email) {
+    //Variables declarations
+    char path[MAX_PATH];
+    int result;
+    if (email == NULL) return FAIL;
+
+    //getting email path format
+    get_email_store_path(path, email->id);
+    result = remove(path); // deleting file 
+
+    if (result == 0)
+        return SUCCESS;
+    else
+        return FAIL;
 }
 
 /**
@@ -184,8 +205,7 @@ int get_folders(FILE *config_file, Database *db) {
                 if (strcmp(folder_name, PROTECT_OUTBOX) == 0 || strcmp(folder_name, PROTECT_INBOX) == 0) // set to protected to true , folder inbox,outbox
                     db->folders[i].protected = TRUE;
 
-                db->folders[i].size = strlen(folder_name);
-                db->folders[i] = db->folders[i];
+                db->folders[i].empty = FALSE;
                 db->folder_count++;
                 i++;
             }
@@ -221,7 +241,7 @@ int get_message_id(FILE *config_file) {
 }
 
 /**
- *  Gets all emails and store it
+ *  Gets all emails and store it on db
  * @param config_file
  * @param db
  */
@@ -274,7 +294,7 @@ int get_message(FILE *config_file, Database *db) {
                             if (temp_email != NULL) {
                                 db->folders[i].emails[j] = temp_email; //adding email to folder
                                 temp_email->referenced++;
-                                db->folders[i].empty = FALSE;
+                                db->folders[i].size++;
                                 j++;
                             } else
                                 return FAIL;
@@ -286,7 +306,7 @@ int get_message(FILE *config_file, Database *db) {
                         temp_email = search_database_email_id(db, email.id);
                         db->folders[i].emails[j] = temp_email;
                         temp_email->referenced++;
-                        db->folders[i].empty = FALSE;
+                        db->folders[i].size++;
                         temp_email = NULL;
                     }
 
@@ -299,7 +319,7 @@ int get_message(FILE *config_file, Database *db) {
 }
 
 /**
- * 
+ *  Reads the email file and save it to the given email structure
  * @param email
  * @return 
  */
@@ -334,55 +354,83 @@ int get_messages_info(Email *email) {
     return FAIL;
 }
 
+/**
+ * Gets the db msg_id_seed and creates meesageid section
+ * Section Message-ID: n  Format 
+ * @param db
+ * @param format
+ */
 void set_config_section_messageID(Database *db, char *format) {
 
     //Variable declarations
     char str_num[MAX_BUF];
 
     strcpy(format, FILE_FORMAT_CONFIG_STRUC_MESSAGES);
-    sprintf(str_num, "%d", db->msg_id_seed); //cast int value to string
+    sprintf(str_num, NUMBER, db->msg_id_seed); //cast int value to string
     strcat(format, str_num);
     strcat(format, NEW_LINE);
     strcat(format, NEW_LINE);
 }
 
+/**
+ * Reads all folders of the database and store it to the file
+ * @param db
+ * @param folder
+ * @param config_file
+ * @param format
+ * @return 
+ */
 int set_config_section_Folder(Database *db, Folder *folder[MAX_FOLDERS], FILE *config_file, char *format) {
     //Variable declarations
     int i = 0, result;
 
+    //writing to file the folders names
     for (i = 0; i < MAX_FOLDERS; i++) {
         if (strcmp(folder[i]->folder_name, FOLDER_INIT_NAME) != 0) {
             strcpy(format, folder[i]->folder_name);
             strcat(format, NEW_LINE);
             result = fputs(format, config_file);
         }
-
     }
 
     return result;
 }
 
+/**
+ * Reads all folders emails of the database and store it to the file
+ * @param folder
+ * @param config_file
+ * @param format
+ * @return 
+ */
 int set_config_section_Folder_MESSAGES(Folder *folder[MAX_FOLDERS], FILE *config_file, char *format) {
 
     //Variable declarations
     int i = 0, j = 0, result;
 
+    //for each folder 
     for (i = 0; i < MAX_FOLDERS; i++) {
-        if (strcmp(folder[i]->folder_name, FOLDER_INIT_NAME) != 0) {
+
+        if (strcmp(folder[i]->folder_name, FOLDER_INIT_NAME) != 0) { //if the folder contains a default value , it means is an empty folder in memory so we don't store it
+            //Preparing str format so we cant write the folder name + Messages: and writing it the to file
             strcpy(format, folder[i]->folder_name);
             strcat(format, FILE_FORMAT_CONFIG_STRUC_MESSAGES_FOLDER_SECTION);
             result = fputs(format, config_file);
 
+            //Preparing str format so we cant write the folder messages sectioln and writing it the to file
             for (j = 0; j < MAX_FOLDER_EMAILS; j++) {
                 if (folder[i]->emails[j] != NULL) { //Getting only position that as an email
-                    strcpy(format, folder[i]->emails[j]->id);
-                    strcat(format, NEW_LINE);
-                    result = fputs(format, config_file);
+                    if (is_email_empty(folder[i]->emails[j]) != TRUE) { // if the email readed is a empty email we don't add it to file
+                        strcpy(format, folder[i]->emails[j]->id);
+                        strcat(format, NEW_LINE);
+                        result = fputs(format, config_file);
+                    }
                 }
             }
             strcpy(format, NEW_LINE);
             result = fputs(format, config_file);
         }
+
     }
 
     return result;

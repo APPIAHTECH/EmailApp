@@ -1,7 +1,7 @@
 /* 
  * File:menu.h
- * Author: Stephen Appiah
- * DATE: 09/01/2018libraries
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * This section contains the menu constants values
  */
 

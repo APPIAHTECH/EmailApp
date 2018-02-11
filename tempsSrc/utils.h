@@ -1,7 +1,7 @@
 /* 
  * File:utils.h
- * Author: Stephen Appiah
- * DATE: 09/01/2018
+ * Authors: Stephen Appiah Frimpong NIA: 206637 , Manuel Aneiros Otero NIA: 205351 , Hugo Hernández Quimbay NIA: 206662
+ * DATE: 11/02/2018
  * This file contains all utilities stuff
  */
 
@@ -36,6 +36,6 @@ void get_email_store_path(char *dest, char *email);
 void str_trim(char *dest, char *str);
 void str_remove_new_line(char *str);
 int sub_email(Email *email, char *caracter);
-
+int confirmation_box(char *msg);
 #endif /* UTILS_H */
 
